@@ -30,8 +30,11 @@ chassis_pid_t chassis_pid;
 float last_in=0;
 float T=0.001;
 float out;
-float CHASSIS_RC_CTRL_SPPED_MAX_FACT = 1.1;//2.0f //1.2f最大跑动不超功率//摇杆速度参数 0.45 //设置速度上限 speed_max = 660*STICK_TO_CHASSIS_SPEED_REF_FACT
-float forwardfeed(float in)
+float power_ctrl_num = 0.85;
+int lopo_flag = 0;
+extern power_control_t power_control;
+
+float forwardfeed(float in,chassis_control_data_t *chassis)
 {
 //	int k1=2000000000,k2=491200000;
 // out=k1*(in-last_in)/T-k2*in;
@@ -43,23 +46,27 @@ float forwardfeed(float in)
 	if(in<17)
 		out=0;
 	else if(in>=17&&in<103)
-		out=(double)0.0778*in+562.3;
+		out=0.0778*in+562.3;
 	else if(in>=103&&in<157)
-		out=(double)0.1319*in+559.8;
+		out=0.1319*in+559.8;
 	else if(in>=157&&in<193)
-		out=(double)0.0804*in+567.7;
+		out=0.0804*in+567.7;
 	else if(in>=193&&in<232)
-		out=(double)0.0553*in+572.5;
+		out=0.0553*in+572.5;
 	else if(in>=232&&in<275)
-		out=(double)0.0602*in+571.5;
+		out=0.0602*in+571.5;
 	else if(in>=275)
-		out=(double)0.0399*in+575.5;
-
+		out=0.0399*in+575.5;
+if(chassis->connect->can2_rc_ctrl.control_mode==GUI_CALI_MODE)
+	out = 0;
 	return out;
 }
 
-int16_t RC_abs(int16_t value)
-{
+
+
+
+	int16_t RC_abs(int16_t value)
+	{
     if (value > 0)
     {
         return value;
@@ -68,7 +75,8 @@ int16_t RC_abs(int16_t value)
     {
         return -value;
     }
-}
+	}
+
 /**
   * @brief        	底盘pid初始化
   * @author         
@@ -76,6 +84,7 @@ int16_t RC_abs(int16_t value)
   * @retval			
   * @note           
   */
+
 void chassis_pid_init(pid_t *pid, cali_pid_t *cali_pid)
 {
 	pid->kp = cali_pid->kp;
@@ -205,28 +214,29 @@ void get_forward_back_value(chassis_control_data_t *chassis)
 	{
 		if ( RC_abs(chassis->connect->can2_rc_ctrl.rc.ch3) < 500 || RC_abs(chassis->connect->can2_rc_ctrl.rc.ch2) < 500)
 		{
-			if(chassis->connect->can2_rc_ctrl.rc.ch3 < 0 && chassis->connect->can2_rc_ctrl.rc.ch2 < 0)
+			if(chassis->connect->can2_rc_ctrl.rc.ch3 < 0 && chassis->connect->can2_rc_ctrl.rc.ch2 < 0)//1
 			{	
 				chassis->forward_back = -((chassis->connect->can2_rc_ctrl.rc.ch3 * chassis->connect->can2_rc_ctrl.rc.ch3)/500) *  \
 										CHASSIS_RC_CTRL_SPPED_MAX_FACT;
 				chassis->left_right = -((chassis->connect->can2_rc_ctrl.rc.ch2 *   chassis->connect->can2_rc_ctrl.rc.ch2)/500) *   \
 									CHASSIS_RC_CTRL_SPPED_MAX_FACT;
 			}
-			else if (chassis->connect->can2_rc_ctrl.rc.ch3 < 0 )
+			else if (chassis->connect->can2_rc_ctrl.rc.ch3 < 0 )//2
 			{
 				chassis->forward_back = -((chassis->connect->can2_rc_ctrl.rc.ch3 * chassis->connect->can2_rc_ctrl.rc.ch3)/500) *  \
 									CHASSIS_RC_CTRL_SPPED_MAX_FACT;
 				chassis->left_right = (chassis->connect->can2_rc_ctrl.rc.ch2 *   chassis->connect->can2_rc_ctrl.rc.ch2)/500 *   \
 								CHASSIS_RC_CTRL_SPPED_MAX_FACT;
+		
 			}
-			else if ( chassis->connect->can2_rc_ctrl.rc.ch2 < 0 )
+			else if ( chassis->connect->can2_rc_ctrl.rc.ch2 < 0 )//3
 			{
 				chassis->forward_back = (chassis->connect->can2_rc_ctrl.rc.ch3 * chassis->connect->can2_rc_ctrl.rc.ch3)/500 *  \
 									CHASSIS_RC_CTRL_SPPED_MAX_FACT;
 				chassis->left_right = -((chassis->connect->can2_rc_ctrl.rc.ch2 *   chassis->connect->can2_rc_ctrl.rc.ch2)/500) *   \
 								    CHASSIS_RC_CTRL_SPPED_MAX_FACT;
 			}
-			else 
+			else //4
 			{
 				chassis->forward_back = (chassis->connect->can2_rc_ctrl.rc.ch3 * chassis->connect->can2_rc_ctrl.rc.ch3)/500 *  \
 									CHASSIS_RC_CTRL_SPPED_MAX_FACT;
@@ -241,6 +251,14 @@ void get_forward_back_value(chassis_control_data_t *chassis)
 			chassis->left_right = chassis->connect->can2_rc_ctrl.rc.ch2 *      \
 									CHASSIS_RC_CTRL_SPPED_MAX_FACT;
 		}
+		if(chassis->connect->can2_rc_ctrl.rc.ch2<0)//-600
+			chassis->forward_back = chassis->forward_back + chassis->left_right * RC_abs(chassis->yaw_motor_msg->encoder.filter_rate) /11 * 0.3;
+		if(chassis->connect->can2_rc_ctrl.rc.ch2>0)//600
+			chassis->forward_back = chassis->forward_back + chassis->left_right * RC_abs(chassis->yaw_motor_msg->encoder.filter_rate) /11 * 0.3;//0.5
+		if(chassis->connect->can2_rc_ctrl.rc.ch3<0)
+			chassis->left_right = chassis->left_right - chassis->forward_back * RC_abs(chassis->yaw_motor_msg->encoder.filter_rate ) /11 * 0.45;
+		if(chassis->connect->can2_rc_ctrl.rc.ch3>0)
+			chassis->left_right = chassis->left_right - chassis->forward_back * RC_abs(chassis->yaw_motor_msg->encoder.filter_rate ) /11 * 0.3;
 	}
 	else if(chassis->connect->can2_rc_ctrl.control_mode ==  KEY_MOUSE_MODE)   //鼠标键模式  *hyj
 	{
@@ -326,6 +344,9 @@ void get_forward_back_value(chassis_control_data_t *chassis)
   * @retval			
   * @note          底盘跟随pid目前不稳定 可能某些量的转换过程中方向有错误
   */
+int yaw_raw=7045,yaw_rotate_set=500;
+
+
 float rotate_abs(float val)
 {
 	if(val < 0)
@@ -357,24 +378,36 @@ void get_rotate_value(chassis_control_data_t *chassis, chassis_pid_t *chassis_pi
 	}
 	else if(chassis->connect->can2_rc_ctrl.work_mode == ROBOT_ROTATE_MOTION_MODE)   //变速小陀螺    *hyj
 	{
-		if(freertos_run_time % 1000 == 0)      
-        {
-			srand(xTaskGetTickCount());
-			//czh
-			if(chassis->connect->can2_rc_ctrl.rc.ch3 == 0||chassis->connect->can2_rc_ctrl.rc.ch2 == 0)
-			{
-				chassis->rotate = CHASSIS_ROTATE_STOP_SPEED;//500u;
-				chassis->rotate_buff_flag = 0;
-			}
-			else
-			//czh
-			chassis->rotate = rand() % CHASSIS_ROTATE_BUFF_SPEED + CHASSIS_ROTATE_BASE_SPEED;// 200u;
-			chassis->rotate_buff_flag = 1;
+//		if(freertos_run_time % 1000 == 0)      
+//        {
+//			srand(xTaskGetTickCount());
+//			//czh
+//			if(chassis->connect->can2_rc_ctrl.rc.ch3 == 0||chassis->connect->can2_rc_ctrl.rc.ch2 == 0)
+//			{
+//				chassis->rotate = CHASSIS_ROTATE_STOP_SPEED;//500u;
+//				chassis->rotate_buff_flag = 0;
+//			}
+//			else
+//			//czh
+//			chassis->rotate = rand() % CHASSIS_ROTATE_BUFF_SPEED + CHASSIS_ROTATE_BASE_SPEED;// 200u;
+//			chassis->rotate_buff_flag = 1;
+//		}
+	// if(chassis->rotate_buff_flag != 1)     //空档期默认为基础速度       
+	// {
+	// 	chassis->rotate = 500u;	//CHASSIS_ROTATE_STOP_SPEED（1000） CHASSIS_ROTATE_BASE_SPEED（600）
+	// }
+				if(RC_abs(chassis->yaw_motor_msg->encoder.raw_value - yaw_raw)>2048)
+		{
+		chassis->rotate_buff_flag=1;
+		yaw_raw=chassis->yaw_motor_msg->encoder.raw_value;
 		}
-	 if(chassis->rotate_buff_flag != 1)     //空档期默认为基础速度       
-	 {
-	 	chassis->rotate = 500u;	//CHASSIS_ROTATE_STOP_SPEED（1000） CHASSIS_ROTATE_BASE_SPEED（600）
-	 }
+		if(chassis->rotate_buff_flag)      
+        {
+			 srand(xTaskGetTickCount());
+				yaw_rotate_set = rand() % CHASSIS_ROTATE_BUFF_SPEED + CHASSIS_ROTATE_BASE_SPEED;
+				chassis->rotate_buff_flag = 0;
+
+		}
 	}
 	else if(chassis->connect->can2_rc_ctrl.work_mode == ROBOT_ROTATE_STOP_MODE)	//静止小陀螺
 	{
@@ -461,6 +494,16 @@ void chassis_set_and_fdb_update(chassis_control_data_t *chassis, \
 	chassis->cm3_set = chassis->forward_back_set - chassis->left_right_set + chassis->rotate_set;
 	chassis->cm4_set = - chassis->forward_back_set - chassis->left_right_set + chassis->rotate_set;
 	
+//	chassis->cm1_set =500 + chassis->cm1_msg->speed_rpm/618;
+//	chassis->cm2_set = -500 + chassis->cm1_msg->speed_rpm/618;
+//	chassis->cm3_set = -500 + chassis->cm1_msg->speed_rpm/618;
+//	chassis->cm4_set = 500 + chassis->cm1_msg->speed_rpm/618;
+	
+//	chassis->cm1_set =500   ;
+//	chassis->cm2_set = -500 ;
+//	chassis->cm3_set = -500 ;
+//	chassis->cm4_set = 500  ;
+	
 	chassis->cm1_fdb = chassis->cm1_msg->encoder.filter_rate;
 	chassis->cm2_fdb = chassis->cm2_msg->encoder.filter_rate;
 	chassis->cm3_fdb = chassis->cm3_msg->encoder.filter_rate;
@@ -475,7 +518,6 @@ void chassis_set_and_fdb_update(chassis_control_data_t *chassis, \
 		HAL_GPIO_WritePin(LED_G_GPIO_Port,LED_G_Pin,GPIO_PIN_SET);
 	}
 }
-
 /**
   * @brief        
   * @author         
@@ -483,8 +525,26 @@ void chassis_set_and_fdb_update(chassis_control_data_t *chassis, \
   * @retval			
   * @note           
   */
+void chassis_forwardfeed(chassis_control_data_t *chassis)
+{
+ chassis->cm1_ff=forwardfeed(RC_abs(chassis->cm1_msg->encoder.filter_rate), &chassis_control_data);
+ chassis->cm2_ff=forwardfeed(RC_abs(chassis->cm2_msg->encoder.filter_rate), &chassis_control_data);
+	chassis->cm3_ff=forwardfeed(RC_abs(chassis->cm3_msg->encoder.filter_rate), &chassis_control_data);
+	chassis->cm4_ff=forwardfeed(RC_abs(chassis->cm4_msg->encoder.filter_rate), &chassis_control_data);
+	if(chassis->cm1_msg->encoder.filter_rate>0)
+	{
+	chassis->cm2_ff=-chassis->cm2_ff;
+	chassis->cm3_ff=-chassis->cm3_ff;		
+	}
+	else
+	{
+	chassis->cm1_ff=-chassis->cm1_ff;
+	chassis->cm4_ff=-chassis->cm4_ff;
+	}
+		
+}
 void chassis_pid_calculate(chassis_control_data_t *chassis,  \
-						   chassis_pid_t *chassis_pid)
+						   chassis_pid_t *chassis_pid,power_control_t *power_control)
 {
 	chassis_pid->cm1_pid.set = chassis->cm1_set;
 	chassis_pid->cm2_pid.set = chassis->cm2_set;
@@ -500,28 +560,30 @@ void chassis_pid_calculate(chassis_control_data_t *chassis,  \
 	chassis_pid->cm2_pid.Calc(&chassis_pid->cm2_pid);
 	chassis_pid->cm3_pid.Calc(&chassis_pid->cm3_pid);
 	chassis_pid->cm4_pid.Calc(&chassis_pid->cm4_pid);
+	
+//do{
+//	chassis_pid->cm1_pid.set = chassis->cm1_set*power_ctrl_num;
+//	chassis_pid->cm2_pid.set = chassis->cm2_set*power_ctrl_num;
+//	chassis_pid->cm3_pid.set = chassis->cm3_set*power_ctrl_num;
+//	chassis_pid->cm4_pid.set = chassis->cm4_set*power_ctrl_num;
+//	
+//	chassis_pid->cm1_pid.fdb = chassis->cm1_fdb;
+//	chassis_pid->cm2_pid.fdb = chassis->cm2_fdb;
+//	chassis_pid->cm3_pid.fdb = chassis->cm3_fdb;
+//	chassis_pid->cm4_pid.fdb = chassis->cm4_fdb;
+//	
+//	chassis_pid->cm1_pid.Calc(&chassis_pid->cm1_pid);
+//	chassis_pid->cm2_pid.Calc(&chassis_pid->cm2_pid);
+//	chassis_pid->cm3_pid.Calc(&chassis_pid->cm3_pid);
+//	chassis_pid->cm4_pid.Calc(&chassis_pid->cm4_pid);
+//	lopo_flag +=1;
+//	
+//	}
+//	while((((chassis_pid->cm1_pid.output+chassis_pid->cm2_pid.output+ \
+//		chassis_pid->cm3_pid.output+chassis_pid->cm4_pid.output)*power_control->real_voltage) \
+//	>=power_control->max_power) || (lopo_flag >= 3));
+//	lopo_flag = 0;
 }
-
-
-void chassis_forwardfeed(chassis_control_data_t *chassis)
-{
- chassis->cm1_ff=forwardfeed(RC_abs(chassis->cm1_msg->encoder.filter_rate));
- chassis->cm2_ff=forwardfeed(RC_abs(chassis->cm2_msg->encoder.filter_rate));
-	chassis->cm3_ff=forwardfeed(RC_abs(chassis->cm3_msg->encoder.filter_rate));
-	chassis->cm4_ff=forwardfeed(RC_abs(chassis->cm4_msg->encoder.filter_rate));
-	if(chassis->cm1_msg->encoder.filter_rate>0)
-	{
-	chassis->cm2_ff=-chassis->cm2_ff;
-	chassis->cm3_ff=-chassis->cm3_ff;		
-	}
-	else
-	{
-	chassis->cm1_ff=-chassis->cm1_ff;
-	chassis->cm4_ff=-chassis->cm4_ff;
-	}
-		
-}
-
 /**
   * @brief        
   * @author         
@@ -529,54 +591,20 @@ void chassis_forwardfeed(chassis_control_data_t *chassis)
   * @retval			
   * @note           
   */
-pid_t pid_power =
-{
-	.kp = 0.001,  //6.2  //10stable  20
-	.ki = 0.0,  //0.3   //0
-	.kd = 0,
-	.ioutMax = 1000,
-	.outputMax = 50000,
-	.mode = PID_POSITION,			//PID_DELTA	PID_POSITION
-};
- float factor = 1,power_fdb,power_set,factor_real;
-float abs_fun(float a)
-{
-	if (a<0) return a = -a;
-	else return a;
-}
-float a1,a2,a3,a4,pmax = 800,nmax,aa;
+ 
 void chassis_control_loop(chassis_control_data_t *chassis, \
 						  chassis_pid_t *chassis_pid)
 {
-	chassis->given_current.cm1 = chassis_pid->cm1_pid.output + chassis->cm1_ff;
-	chassis->given_current.cm2 = chassis_pid->cm2_pid.output + chassis->cm2_ff;
-	chassis->given_current.cm3 = chassis_pid->cm3_pid.output + chassis->cm3_ff;
-	chassis->given_current.cm4 = chassis_pid->cm4_pid.output + chassis->cm4_ff;
+	chassis->given_current.cm1 = chassis_pid->cm1_pid.output+chassis->cm1_ff;
+	chassis->given_current.cm2 = chassis_pid->cm2_pid.output+chassis->cm2_ff;
+	chassis->given_current.cm3 = chassis_pid->cm3_pid.output+chassis->cm3_ff;
+	chassis->given_current.cm4 = chassis_pid->cm4_pid.output+chassis->cm4_ff;
 	
-	a1 = abs_fun(chassis->given_current.cm1);
-	a2 = abs_fun(chassis->given_current.cm2);
-	a3 = abs_fun(chassis->given_current.cm3);
-	a4 = abs_fun(chassis->given_current.cm4);
-	
-	if (a1>pmax) {nmax = a1;aa =1;}
-	if (a2>pmax) {nmax = a2;aa =1;}
-	if (a3>pmax) {nmax = a3;aa =1;}
-	if (a4>pmax) {nmax = a4;aa =1;}
-	
-	if(aa == 1) {factor = (a1 - pmax)/a1;}
-	else if(aa == 2) {factor = (a2 - pmax)/a2;}
-	else if(aa == 3) {factor = (a3 - pmax)/a3;}
-	else if(aa == 4) {factor = (a4 - pmax)/a4;}	
-	factor = 0;
-	chassis->given_current.cm1 = chassis->given_current.cm1 * (1 - factor);
-	chassis->given_current.cm2 = chassis->given_current.cm2 * (1 - factor);
-	chassis->given_current.cm3 = chassis->given_current.cm3 * (1 - factor);
-	chassis->given_current.cm4 = chassis->given_current.cm4 * (1 - factor);
-	
-	aa = 0;
-	nmax = 0;
-	factor = 0;
-	
+//	
+//	chassis->given_current.cm1 = chassis_pid->cm1_pid.output;
+//	chassis->given_current.cm2 = chassis_pid->cm2_pid.output;
+//	chassis->given_current.cm3 = chassis_pid->cm3_pid.output;
+//	chassis->given_current.cm4 = chassis_pid->cm4_pid.output;
 	if(chassis->connect->can2_rc_ctrl.control_mode == GUI_CALI_MODE)
 	{
 		set_chassis_stop();
@@ -632,16 +660,19 @@ void chassis_task(void *argument)
 
 	vTaskDelay(CHASSIS_TASK_INIT_TIME);
 	chassis_init(&chassis_control_data, &chassis_pid);
-	CHASSIS_RC_CTRL_SPPED_MAX_FACT = 1.1;
+	
 	while(1)
 	{
-
 		current_time = xTaskGetTickCount();                         //当前系统时间       *hyj
 		chassis_set_and_fdb_update(&chassis_control_data, &chassis_pid);
-		//chassis_power_limit();
-		chassis_pid_calculate(&chassis_control_data, &chassis_pid);
+//		chassis_power_limit();
+		chassis_pid_calculate(&chassis_control_data, &chassis_pid,&power_control);
 		chassis_forwardfeed(&chassis_control_data);
 		chassis_control_loop(&chassis_control_data, &chassis_pid);
+		
+		set_chassis_power(6);
+		
+		
 		// if(chassis_control_data.connect->can2_rc_ctrl.work_mode == ROBOT_CALI_MODE)
 		// {
 		// 	set_GUI_task_state(&chassis_control_data);

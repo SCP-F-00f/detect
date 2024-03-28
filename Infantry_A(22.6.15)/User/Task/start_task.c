@@ -49,7 +49,7 @@ void GUI_task(void *argument);
 osThreadId_t test_task_Handler;
 const osThreadAttr_t test_task_attr = {
   .name = "test_task",
-  .priority = (osPriority_t) osPriorityHigh,//osPriorityNormal5,
+  .priority = (osPriority_t) osPriorityNormal5,
   .stack_size = 128 * 4 
 };
 void test_task(void *argument);

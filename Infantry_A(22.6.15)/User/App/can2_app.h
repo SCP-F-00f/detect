@@ -4,7 +4,6 @@
 #include "stm32f4xx_hal.h"
 #include "struct_typedef.h"
 #include "can1_app.h"
-#include "judge.h"
 
 #define CAN_2 hcan2
 
@@ -21,7 +20,7 @@ typedef enum
 
 } can2_msg_id_e;
 
-void send_shoot_17mm_data(robot_status_t *robot_status);
+void send_shoot_17mm_data(void);
 void send_shoot_judge_data(void);
 motor_msg_t *get_yaw_motor_msg_point(void);
 void can2_message_progress(CAN_RxHeaderTypeDef *pHeader, uint8_t aData[]);
