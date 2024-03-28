@@ -126,23 +126,45 @@ extern power_heat_data_t power_heat;
 extern shoot_data_t shoot_data; 
 extern hurt_data_t robot_hurt;
 
-void send_shoot_17mm_data(void)  
+void send_shoot_17mm_data(robot_status_t *robot_status)  
 {
+				int shooter_17mm_speed_limit=30;
 	can2_tx_header.StdId = CAN2_SHOOT_17mm_ID;
     can2_tx_header.IDE = CAN_ID_STD;
     can2_tx_header.RTR = CAN_RTR_DATA;
     can2_tx_header.DLC = 0x08;
 
-    can2_tx_data[0] = (uint8_t)(robot_status.shooter_barrel_cooling_value>>8);
-    can2_tx_data[1] = (uint8_t)(robot_status.shooter_barrel_cooling_value);
-    can2_tx_data[2] = (uint8_t)(robot_status.shooter_barrel_heat_limit>>8);
-    can2_tx_data[3] = (uint8_t)(robot_status.shooter_barrel_heat_limit);
-//		can2_tx_data[4] = (uint8_t)(robot_status.shooter_id1_17mm_speed_limit>>8);//现版本无射速上线
-//    can2_tx_data[5] = (uint8_t)(robot_status.shooter_id1_17mm_speed_limit);
+    can2_tx_data[0] = (uint8_t)(robot_status->shooter_barrel_cooling_value>>8);
+    can2_tx_data[1] = (uint8_t)(robot_status->shooter_barrel_cooling_value);
+    can2_tx_data[2] = (uint8_t)(robot_status->shooter_barrel_heat_limit>>8);
+    can2_tx_data[3] = (uint8_t)(robot_status->shooter_barrel_heat_limit);
+		
+		if(robot_status->robot_level==1&&robot_status->shooter_barrel_heat_limit==75)
+				 shooter_17mm_speed_limit=30;
+		else if(robot_status->robot_level==2)
+		{
+			if(robot_status->shooter_barrel_heat_limit==100)
+				 shooter_17mm_speed_limit=18;
+			else if(robot_status->shooter_barrel_heat_limit==150)	
+				 shooter_17mm_speed_limit=30;
+		}
+		else if(robot_status->robot_level==3)
+		{
+			if(robot_status->shooter_barrel_heat_limit==150)
+				 shooter_17mm_speed_limit=18;
+			else if(robot_status->shooter_barrel_heat_limit==200)	
+				 shooter_17mm_speed_limit=30;
+		}
+		else
+			 shooter_17mm_speed_limit=15;
+		
+		can2_tx_data[4] = (uint8_t)( shooter_17mm_speed_limit>>8);//
+    can2_tx_data[5] = (uint8_t)( shooter_17mm_speed_limit);
     can2_tx_data[6] = (uint8_t)(power_heat.shooter_17mm_1_barrel_heat>>8);
     can2_tx_data[7] = (uint8_t)(power_heat.shooter_17mm_1_barrel_heat);//改为枪口热量
 	HAL_CAN_AddTxMessage(&hcan2, &can2_tx_header, can2_tx_data, (uint32_t *) CAN_TX_MAILBOX0);
 }
+
 void send_shoot_judge_data(void)  
 {
 	can2_tx_header.StdId = CAN2_SHOOT_JUDGE_ID;

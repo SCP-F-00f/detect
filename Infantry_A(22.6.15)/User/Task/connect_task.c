@@ -22,6 +22,7 @@
 
 extern CAN_TxHeaderTypeDef can2_tx_header;
 extern uint8_t can2_tx_data[CAN_TX_BUF_SIZE];
+extern robot_status_t robot_status;
 connect_t connect_data;
 
 
@@ -42,9 +43,8 @@ void connect_rc_ctrl_process(connect_t *connect_data, uint8_t aData[])
 	
 	connect_data->can2_rc_ctrl.rc.ch2 -= RC_CHANNEL_VALUE_MIDDLE;
 	connect_data->can2_rc_ctrl.rc.ch3 -= RC_CHANNEL_VALUE_MIDDLE;
-	connect_data->can2_rc_ctrl.rc.ch2=-connect_data->can2_rc_ctrl.rc.ch2;
-	connect_data->can2_rc_ctrl.rc.ch3=-connect_data->can2_rc_ctrl.rc.ch3;
-	
+	connect_data->can2_rc_ctrl.rc.ch2 *= -1;
+	connect_data->can2_rc_ctrl.rc.ch3 *= -1;
 	connect_data->receive_rc_data_flag = 1;//表示已经接收到了can2的rc数据
 }
 
@@ -104,7 +104,7 @@ void connect_task(void *argument)
 	connect_init(&connect_data);
 	while(1)
 	{
-		send_shoot_17mm_data();
+		send_shoot_17mm_data(&robot_status);
 		send_shoot_judge_data();
 		vTaskDelay(10);
 	}

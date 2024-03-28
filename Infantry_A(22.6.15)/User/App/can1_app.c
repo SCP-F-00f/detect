@@ -143,24 +143,26 @@ void can1_message_progress(CAN_RxHeaderTypeDef *pHeader, uint8_t aData[])
 		{
 			chassis_motor_msg_process(&cm4_msg ,aData);            
 		}break;
-		case 0x211:
+		case 0x00:
 		{
 			chassis_power_msg_cap(&power_control ,aData);            
 		}break;
-		case 0x212:
-		{
-			chassis_power_msg_power(&power_control ,aData);            
-		}break;
-		case 0x213:
-		{
-			chassis_power_msg_max_power(&power_control ,aData);            
-		}break;
-		case 0x214:
-		{
-			chassis_power_msg_voltage(&power_control ,aData);            
-		}break;
+//		case 0x212:
+//		{
+//			chassis_power_msg_power(&power_control ,aData);            
+//		}break;
+//		case 0x213:
+//		{
+//			chassis_power_msg_max_power(&power_control ,aData);            
+//		}break;
+//		case 0x214:
+//		{
+//			chassis_power_msg_voltage(&power_control ,aData);            
+//		}break;
 	}
 }
+
+
 /**
   * @brief          
   * @author         

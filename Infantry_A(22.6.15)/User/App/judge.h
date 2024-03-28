@@ -383,12 +383,12 @@ typedef __packed struct	//0x020E 雷达易伤效果
 
 
 /* 0x030X --------------------------------------------------------------------*/
-typedef __packed struct  //0x0301 机器人相互通讯（头）
+typedef __packed struct  //0x0301 机器人相互通讯
 {
  uint16_t data_cmd_id;
  uint16_t sender_id;
  uint16_t receiver_id;
-// uint8_t user_data[113];				//x max = 113
+ uint8_t user_data[113];				//x max = 113
 }robot_interaction_data_t;
 
 /*  ---------------------------0x0301子内容ID-----------------------------------------*/
@@ -452,7 +452,7 @@ typedef __packed struct  //绘制UI UI图形数据
 
 typedef __packed struct	//0x0110 绘制字符
 {
-graphic_data_struct_t grapic_data_struct;
+interaction_figure_t grapic_data_struct;
 uint8_t data[30];
 } ext_client_custom_character_t;
 
@@ -510,13 +510,6 @@ uint16_t sender_id;
 uint16_t receiver_id;
 uint8_t user_data[30];
 }custom_info_t;
-
-
-
-
-
-
-
 
 /* 自定义绘制UI结构体 -------------------------------------------------------*/
 
@@ -596,8 +589,6 @@ typedef __packed struct  //绘制UI UI删除图形完整结构体
 	delete_data_struct_t Delete;
 	uint16_t CRC16;
 } UI_Delete_t;
-
-
 
 
 //void Referee_StructInit(void);

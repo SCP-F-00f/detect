@@ -54,7 +54,7 @@ const uint8_t CRC8_TAB[256] =
 		0x74, 0x2a, 0xc8, 0x96, 0x15, 0x4b, 0xa9, 0xf7, 0xb6, 0xe8, 0x0a, 0x54, 0xd7, 0x89, 0x6b, 0x35, 
 };
 const uint16_t CRC_INIT = 0xffff;
-const uint16_t CRC16_TAB[256] =
+const uint16_t wCRC_Table[256] =
 {
 
 		0x0000, 0x1189, 0x2312, 0x329b, 0x4624, 0x57ad, 0x6536, 0x74bf,
@@ -146,7 +146,7 @@ uint16_t Get_CRC16_Check_Sum(uint8_t *pchMessage,uint32_t dwLength,uint16_t wCRC
 	while(dwLength--)
 	{
 		chData = *pchMessage++;
-		(wCRC) = ((uint16_t)(wCRC) >> 8) ^ CRC16_TAB[((uint16_t)(wCRC) ^ (uint16_t)(chData)) & 0x00ff];
+		(wCRC) = ((uint16_t)(wCRC) >> 8) ^ wCRC_Table[((uint16_t)(wCRC) ^ (uint16_t)(chData)) & 0x00ff];
 	}
 	return wCRC;
 }
@@ -207,6 +207,11 @@ void process_judge_message(uint8_t *ReadFromUsart)
 				judge_manegement.cmd_id = ReadFromUsart[6]<<8|ReadFromUsart[5];
 				switch(judge_manegement.cmd_id)
 				{        //都别删，回校更新完裁判系统固件，检测后，会再整理     *hyj
+					
+					case ROBOT_HURT_ID:get_robot_hurt(ReadFromUsart,&robot_hurt);robot_hurt_analysis();break;
+					case SHOOT_DATA_ID:get_shoot_infor(ReadFromUsart,&shoot_data);bullets_remaining.projectile_allowance_17mm--;break;
+					case BULLETS_NUMBER_ID:get_bullets_remaining(ReadFromUsart,&bullets_remaining);break;
+					
 					case GAME_STATUS_DATA_ID:get_game_status(ReadFromUsart,&game_status);break;
 					case REFEREE_WARNING_ID:get_referee_warning(ReadFromUsart,&referee_warning);break;
 					case ROBOT_STATE_ID:{
@@ -214,13 +219,10 @@ void process_judge_message(uint8_t *ReadFromUsart)
 						{
 							Infantry.Pre_HP = robot_status.current_HP;                       //获取前一血量  
 						}
-						get_robot_status(ReadFromUsart,&robot_status);}
-						break;	
+						get_robot_status(ReadFromUsart,&robot_status);}break;	
 					case ROBOT_POWER_HEART_ID:get_power_heart(ReadFromUsart,&power_heat);break;
 					case BUFF_ID:get_robot_buff(ReadFromUsart,&robot_buff);break;
-					case ROBOT_HURT_ID:get_robot_hurt(ReadFromUsart,&robot_hurt);robot_hurt_analysis();break;
-//	zanshi				case SHOOT_DATA_ID:get_shoot_infor(ReadFromUsart,&shoot_data);bullets_remaining.shootnum++;break;
-//					case BULLETS_NUMBER_ID:get_bullets_remaining(ReadFromUsart,&bullets_remaining);break;
+
 					default :break;
 				}
 				if(*(ReadFromUsart + JUDGE_LEN_HEADER + JUDGE_LEN_CMDID + judge_manegement.frame_header.data_length + JUDGE_LEN_TAIL) == 0xA5)
@@ -313,226 +315,3 @@ void get_bullets_remaining(uint8_t *ReadFromUsart, projectile_allowance_t *bulle
 }
 
 
-/*==============================================================================
-              ##### UI基本图形绘制函数 #####
-  ==============================================================================
-    [..]  该部分提供如下函数:
-		  (+) 绘制直线 UI_Draw_Line
-      (+) 绘制矩形 UI_Draw_Rectangle
-      (+) 绘制整圆 UI_Draw_Circle
-      (+) 绘制椭圆 UI_Draw_Ellipse
-      (+) 绘制圆弧 UI_Draw_Arc
-      (+) 绘制小数 UI_Draw_Float
-      (+) 绘制整数 UI_Draw_Int
-      (+) 绘制字符 UI_Draw_String
-*/
-void UI_Draw_Line(graphic_data_struct_t *Graph,        //UI图形数据结构体指针
-	                char                   GraphName[3], //图形名 作为客户端的索引
-									uint8_t                GraphOperate, //UI图形操作 对应UI_Graph_XXX的4种操作
-									uint8_t                Layer,        //UI图形图层 [0,9]
-									uint8_t                Color,        //UI图形颜色 对应UI_Color_XXX的9种颜色
-									uint16_t               Width,        //线宽
-									uint16_t               StartX,       //起始坐标X
-									uint16_t               StartY,       //起始坐标Y
-									uint16_t               EndX,         //截止坐标X
-									uint16_t               EndY)         //截止坐标Y
-{
-	Graph->graphic_name[0] = GraphName[0];
-	Graph->graphic_name[1] = GraphName[1];
-	Graph->graphic_name[2] = GraphName[2];
-	Graph->operate_tpye    = GraphOperate;
-	Graph->graphic_tpye    = UI_Graph_Line;
-	Graph->layer           = Layer;
-	Graph->color           = Color;
-	Graph->width           = Width;
-	Graph->start_x         = StartX;
-	Graph->start_y         = StartY;
-	Graph->end_x           = EndX;
-	Graph->end_y           = EndY;
-}
-
-void UI_Draw_Rectangle(graphic_data_struct_t *Graph,        //UI图形数据结构体指针
-	                     char                   GraphName[3], //图形名 作为客户端的索引
-									     uint8_t                GraphOperate, //UI图形操作 对应UI_Graph_XXX的4种操作
-									     uint8_t                Layer,        //UI图形图层 [0,9]
-							     	 	 uint8_t                Color,        //UI图形颜色 对应UI_Color_XXX的9种颜色
-							     	   uint16_t               Width,        //线宽
-							     		 uint16_t               StartX,       //起始坐标X
-							     		 uint16_t               StartY,       //起始坐标Y
-							     		 uint16_t               EndX,         //截止坐标X
-							     		 uint16_t               EndY)         //截止坐标Y
-{
-	Graph->graphic_name[0] = GraphName[0];
-	Graph->graphic_name[1] = GraphName[1];
-	Graph->graphic_name[2] = GraphName[2];
-	Graph->operate_tpye    = GraphOperate;
-	Graph->graphic_tpye    = UI_Graph_Rectangle;
-	Graph->layer           = Layer;
-	Graph->color           = Color;
-	Graph->width           = Width;
-	Graph->start_x         = StartX;
-	Graph->start_y         = StartY;
-	Graph->end_x           = EndX;
-	Graph->end_y           = EndY;
-}
-
-void UI_Draw_Circle(graphic_data_struct_t *Graph,        //UI图形数据结构体指针
-	                  char                   GraphName[3], //图形名 作为客户端的索引
-									  uint8_t                GraphOperate, //UI图形操作 对应UI_Graph_XXX的4种操作
-									  uint8_t                Layer,        //UI图形图层 [0,9]
-							     	uint8_t                Color,        //UI图形颜色 对应UI_Color_XXX的9种颜色
-										uint16_t               Width,        //线宽
-										uint16_t               CenterX,      //圆心坐标X
-							      uint16_t               CenterY,      //圆心坐标Y
-										uint16_t               Radius)       //半径
-{
-	Graph->graphic_name[0] = GraphName[0];
-	Graph->graphic_name[1] = GraphName[1];
-	Graph->graphic_name[2] = GraphName[2];
-	Graph->operate_tpye    = GraphOperate;
-	Graph->graphic_tpye    = UI_Graph_Circle;
-	Graph->layer           = Layer;
-	Graph->color           = Color;
-	Graph->width           = Width;
-	Graph->start_x         = CenterX;
-	Graph->start_y         = CenterY;
-	Graph->radius          = Radius;
-}
-
-void UI_Draw_Ellipse(graphic_data_struct_t *Graph,        //UI图形数据结构体指针
-	                   char                   GraphName[3], //图形名 作为客户端的索引
-									   uint8_t                GraphOperate, //UI图形操作 对应UI_Graph_XXX的4种操作
-									   uint8_t                Layer,        //UI图形图层 [0,9]
-							     	 uint8_t                Color,        //UI图形颜色 对应UI_Color_XXX的9种颜色
-										 uint16_t               Width,        //线宽
-										 uint16_t               CenterX,      //圆心坐标X
-							       uint16_t               CenterY,      //圆心坐标Y
-										 uint16_t               XHalfAxis,    //X半轴长
-										 uint16_t               YHalfAxis)    //Y半轴长
-{
-	Graph->graphic_name[0] = GraphName[0];
-	Graph->graphic_name[1] = GraphName[1];
-	Graph->graphic_name[2] = GraphName[2];
-	Graph->operate_tpye    = GraphOperate;
-	Graph->graphic_tpye    = UI_Graph_Ellipse;
-	Graph->layer           = Layer;
-	Graph->color           = Color;
-	Graph->width           = Width;
-	Graph->start_x         = CenterX;
-	Graph->start_y         = CenterY;
-	Graph->end_x           = XHalfAxis;
-	Graph->end_y           = YHalfAxis;
-}
-
-void UI_Draw_Arc(graphic_data_struct_t *Graph,        //UI图形数据结构体指针
-	               char                   GraphName[3], //图形名 作为客户端的索引
-							   uint8_t                GraphOperate, //UI图形操作 对应UI_Graph_XXX的4种操作
-								 uint8_t                Layer,        //UI图形图层 [0,9]
-							   uint8_t                Color,        //UI图形颜色 对应UI_Color_XXX的9种颜色
-								 uint16_t               StartAngle,   //起始角度 [0,360]
-								 uint16_t               EndAngle,     //截止角度 [0,360]
-								 uint16_t               Width,        //线宽
-								 uint16_t               CenterX,      //圆心坐标X
-							   uint16_t               CenterY,      //圆心坐标Y
-								 uint16_t               XHalfAxis,    //X半轴长
-								 uint16_t               YHalfAxis)    //Y半轴长
-{
-	Graph->graphic_name[0] = GraphName[0];
-	Graph->graphic_name[1] = GraphName[1];
-	Graph->graphic_name[2] = GraphName[2];
-	Graph->operate_tpye    = GraphOperate;
-	Graph->graphic_tpye    = UI_Graph_Arc;
-	Graph->layer           = Layer;
-	Graph->color           = Color;
-	Graph->start_angle     = StartAngle;
-	Graph->end_angle       = EndAngle;
-	Graph->width           = Width;
-	Graph->start_x         = CenterX;
-	Graph->start_y         = CenterY;
-	Graph->end_x           = XHalfAxis;
-	Graph->end_y           = YHalfAxis;
-}
-
-void UI_Draw_Float(graphic_data_struct_t *Graph,        //UI图形数据结构体指针
-	                 char                   GraphName[3], //图形名 作为客户端的索引
-							     uint8_t                GraphOperate, //UI图形操作 对应UI_Graph_XXX的4种操作
-								   uint8_t                Layer,        //UI图形图层 [0,9]
-							     uint8_t                Color,        //UI图形颜色 对应UI_Color_XXX的9种颜色
-									 uint16_t               NumberSize,   //字体大小
-									 uint16_t               Significant,  //有效位数
-									 uint16_t               Width,        //线宽
-							     uint16_t               StartX,       //起始坐标X
-							     uint16_t               StartY,       //起始坐标Y
-									 float                  FloatData)    //数字内容
-{
-	Graph->graphic_name[0] = GraphName[0];
-	Graph->graphic_name[1] = GraphName[1];
-	Graph->graphic_name[2] = GraphName[2];
-	Graph->operate_tpye    = GraphOperate;
-	Graph->graphic_tpye    = UI_Graph_Float;
-	Graph->layer           = Layer;
-	Graph->color           = Color;
-	Graph->start_angle     = NumberSize;
-	Graph->end_angle       = Significant;
-	Graph->width           = Width;
-	Graph->start_x         = StartX;
-	Graph->start_y         = StartY;
-	int32_t IntData = FloatData * 1000;
-	Graph->radius          = (IntData & 0x000003ff) >>  0;
-	Graph->end_x           = (IntData & 0x001ffc00) >> 10;
-	Graph->end_y           = (IntData & 0xffe00000) >> 21;
-}
-
-void UI_Draw_Int(graphic_data_struct_t *Graph,        //UI图形数据结构体指针
-	               char                   GraphName[3], //图形名 作为客户端的索引
-							   uint8_t                GraphOperate, //UI图形操作 对应UI_Graph_XXX的4种操作
-								 uint8_t                Layer,        //UI图形图层 [0,9]
-							   uint8_t                Color,        //UI图形颜色 对应UI_Color_XXX的9种颜色
-								 uint16_t               NumberSize,   //字体大小
-								 uint16_t               Width,        //线宽
-							   uint16_t               StartX,       //起始坐标X
-							   uint16_t               StartY,       //起始坐标Y
-								 int32_t                IntData)      //数字内容
-{
-	Graph->graphic_name[0] = GraphName[0];
-	Graph->graphic_name[1] = GraphName[1];
-	Graph->graphic_name[2] = GraphName[2];
-	Graph->operate_tpye    = GraphOperate;
-	Graph->graphic_tpye    = UI_Graph_Int;
-	Graph->layer           = Layer;
-	Graph->color           = Color;
-	Graph->start_angle     = NumberSize;
-	Graph->width           = Width;
-	Graph->start_x         = StartX;
-	Graph->start_y         = StartY;
-	Graph->radius          = (IntData & 0x000003ff) >>  0;
-	Graph->end_x           = (IntData & 0x001ffc00) >> 10;
-	Graph->end_y           = (IntData & 0xffe00000) >> 21;
-}
-
-void UI_Draw_String(string_data_struct_t *String,        //UI图形数据结构体指针
-	                  char                  StringName[3], //图形名 作为客户端的索引
-							      uint8_t               StringOperate, //UI图形操作 对应UI_Graph_XXX的4种操作
-								    uint8_t               Layer,         //UI图形图层 [0,9]
-							      uint8_t               Color,         //UI图形颜色 对应UI_Color_XXX的9种颜色
-										uint16_t              CharSize,      //字体大小
-									  uint16_t              StringLength,  //字符串长度
-									  uint16_t              Width,         //线宽
-							      uint16_t              StartX,        //起始坐标X
-							      uint16_t              StartY,        //起始坐标Y
-										char                 *StringData)    //字符串内容
-{
-	String->string_name[0] = StringName[0];
-	String->string_name[1] = StringName[1];
-	String->string_name[2] = StringName[2];
-	String->operate_tpye   = StringOperate;
-	String->graphic_tpye   = UI_Graph_String;
-	String->layer          = Layer;
-	String->color          = Color;
-	String->start_angle    = CharSize;
-	String->end_angle      = StringLength;
-	String->width          = Width;
-	String->start_x        = StartX;
-	String->start_y        = StartY;
-	for(int i = 0; i < StringLength; i ++) String->stringdata[i] = *StringData ++;
-}

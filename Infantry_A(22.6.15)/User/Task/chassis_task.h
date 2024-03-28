@@ -25,17 +25,17 @@
 #define KEY_PRESSED_OFFSET_V            ((uint16_t)1 << 14)
 #define KEY_PRESSED_OFFSET_B            ((uint16_t)1 << 15)
 
-#define CHASSIS_FORWARD_KEY              KEY_PRESSED_OFFSET_W           
-#define CHASSIS_BACK_KEY                 KEY_PRESSED_OFFSET_S        
-#define CHASSIS_LEFT_KEY                 KEY_PRESSED_OFFSET_A           
-#define CHASSIS_RIGHT_KEY                KEY_PRESSED_OFFSET_D    
+#define CHASSIS_FORWARD_KEY              KEY_PRESSED_OFFSET_S           
+#define CHASSIS_BACK_KEY                 KEY_PRESSED_OFFSET_W        
+#define CHASSIS_LEFT_KEY                 KEY_PRESSED_OFFSET_D           
+#define CHASSIS_RIGHT_KEY                KEY_PRESSED_OFFSET_A    
 #define CHASSIS_HIGH_SPEED_KEY           KEY_PRESSED_OFFSET_SHIFT
 #define ROBOT_COMMON_MODE_KEY            KEY_PRESSED_OFFSET_V  
 #define ROBOT_RHOMB_MODE_KEY             KEY_PRESSED_OFFSET_C
 
 
 #define CHASSIS_TASK_INIT_TIME           (200)                        //任务开启前延时 单位ms
-#define CHASSIS_RC_CTRL_SPPED_MAX_FACT   (1.2f)//2.0f //1.2f最大跑动不超功率//摇杆速度参数 0.45 //设置速度上限 speed_max = 660*STICK_TO_CHASSIS_SPEED_REF_FACT
+
 
 #define CHASSIS_MOUSE_CTRL_NORMAL_SPPED  (1500.0f)                    //鼠标控制时的 速度
 #define CHASSIS_MOUSE_CTRL_HIGH_SPPED     (2500.0f)                  //按shift的加速值	1600
@@ -141,9 +141,8 @@ typedef struct
 uint8_t get_robot_control_mode(void);
 uint8_t get_robot_work_mode(void);
 
-int16_t RC_abs(int16_t value);
 void chassis_set_and_fdb_update(chassis_control_data_t *chassis,chassis_pid_t *chassis_pid);
-void chassis_pid_calculate(chassis_control_data_t *chassis,chassis_pid_t *chassis_pid,power_control_t *power_control);
+void chassis_pid_calculate(chassis_control_data_t *chassis,chassis_pid_t *chassis_pid);
 void chassis_task(void *argument);
 
 #endif
