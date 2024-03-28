@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2024 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -39,7 +39,7 @@ void MX_GPIO_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 
-#define GREEDLED_ON()  PFout(14)=0//低电平有�?
+#define GREEDLED_ON()  PFout(14)=0//低电平有效
 #define GREEDLED_OFF() PFout(14)=1
 
 #define REDLED_ON()    PEout(11)=0

@@ -18,13 +18,13 @@
 #include "can2_app.h"
 #include "main.h"
 #include "chassis_task.h"
+#include "judge.h"
 
 
 extern CAN_TxHeaderTypeDef can2_tx_header;
 extern uint8_t can2_tx_data[CAN_TX_BUF_SIZE];
-extern robot_status_t robot_status;
 connect_t connect_data;
-
+extern robot_status_t robot_status;
 
 /**
   * @brief          can2接收rc数据保存
@@ -36,6 +36,7 @@ connect_t connect_data;
 void connect_rc_ctrl_process(connect_t *connect_data, uint8_t aData[])
 {
 	connect_data->can2_rc_ctrl.control_mode = (aData[0]);
+//	connect_data->can2_rc_ctrl.mouse.mouse_flag = aData[0]>>7;
 	connect_data->can2_rc_ctrl.work_mode = (aData[1]);
 	connect_data->can2_rc_ctrl.rc.ch2 = (aData[2]<<8)|aData[3];
 	connect_data->can2_rc_ctrl.rc.ch3 = (aData[4]<<8)|aData[5];

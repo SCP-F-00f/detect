@@ -49,10 +49,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t usart3_rx_data[usart3_RX_BUFF_SIZE];
-extern UART_HandleTypeDef huart3;
-extern DMA_HandleTypeDef hdma_usart3_rx;
-extern DMA_HandleTypeDef hdma_usart3_tx;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -64,16 +61,6 @@ extern volatile uint64_t freertos_run_time;
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-		__HAL_UART_CLEAR_IDLEFLAG(&huart3);
-		HAL_UART_DMAStop(&huart3);                                        //停止本次DMA传输
-		uint8_t data_length  = DMA_UsART3_SIZE - __HAL_DMA_GET_COUNTER(&hdma_usart3_tx);   //计算接收到的数据长度
-		process_judge_message( usart3_rx_data );
-		memset(usart3_rx_data,0,data_length);                                            //清零接收缓冲区
-		HAL_UART_Receive_DMA(&huart3, usart3_rx_data, DMA_UsART3_SIZE);                    //重启开始DMA传输 每次255字节数据
-}
-
 
 /* USER CODE END 0 */
 
@@ -89,7 +76,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+   HAL_Init();
 
   /* USER CODE BEGIN Init */
   /* USER CODE END Init */

@@ -1,3 +1,4 @@
+
 #ifndef CAN1_APP_H
 #define CAN1_APP_H
 
@@ -6,15 +7,6 @@
 
 #define RATE_BUF_SIZE 6  //电机速度滑动滤波窗口大小
 #define CHASSIS_CAN hcan1
-
-typedef struct //超级电容控制器结构体
-{
-	int16_t cap;
-	int16_t power;
-	int16_t max_power;
-	int16_t voltage;
-	float real_voltage;
-}power_control_t;
 
 typedef struct
 {

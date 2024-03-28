@@ -72,10 +72,6 @@ void USAR_UART_IDLECallback(UART_HandleTypeDef *huart3);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define LEVEL2_Pin GPIO_PIN_9
-#define LEVEL2_GPIO_Port GPIOI
-#define LEVEL1_Pin GPIO_PIN_10
-#define LEVEL1_GPIO_Port GPIOF
 #define KEY_Pin GPIO_PIN_2
 #define KEY_GPIO_Port GPIOB
 #define LED_R_Pin GPIO_PIN_11

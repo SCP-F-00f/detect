@@ -207,11 +207,6 @@ void process_judge_message(uint8_t *ReadFromUsart)
 				judge_manegement.cmd_id = ReadFromUsart[6]<<8|ReadFromUsart[5];
 				switch(judge_manegement.cmd_id)
 				{        //都别删，回校更新完裁判系统固件，检测后，会再整理     *hyj
-					
-					case ROBOT_HURT_ID:get_robot_hurt(ReadFromUsart,&robot_hurt);robot_hurt_analysis();break;
-					case SHOOT_DATA_ID:get_shoot_infor(ReadFromUsart,&shoot_data);bullets_remaining.projectile_allowance_17mm--;break;
-					case BULLETS_NUMBER_ID:get_bullets_remaining(ReadFromUsart,&bullets_remaining);break;
-					
 					case GAME_STATUS_DATA_ID:get_game_status(ReadFromUsart,&game_status);break;
 					case REFEREE_WARNING_ID:get_referee_warning(ReadFromUsart,&referee_warning);break;
 					case ROBOT_STATE_ID:{
@@ -219,10 +214,13 @@ void process_judge_message(uint8_t *ReadFromUsart)
 						{
 							Infantry.Pre_HP = robot_status.current_HP;                       //获取前一血量  
 						}
-						get_robot_status(ReadFromUsart,&robot_status);}break;	
+						get_robot_status(ReadFromUsart,&robot_status);}
+						break;	
 					case ROBOT_POWER_HEART_ID:get_power_heart(ReadFromUsart,&power_heat);break;
 					case BUFF_ID:get_robot_buff(ReadFromUsart,&robot_buff);break;
-
+					case ROBOT_HURT_ID:get_robot_hurt(ReadFromUsart,&robot_hurt);robot_hurt_analysis();break;
+//	zanshi				case SHOOT_DATA_ID:get_shoot_infor(ReadFromUsart,&shoot_data);bullets_remaining.shootnum++;break;
+//					case BULLETS_NUMBER_ID:get_bullets_remaining(ReadFromUsart,&bullets_remaining);break;
 					default :break;
 				}
 				if(*(ReadFromUsart + JUDGE_LEN_HEADER + JUDGE_LEN_CMDID + judge_manegement.frame_header.data_length + JUDGE_LEN_TAIL) == 0xA5)

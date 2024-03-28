@@ -21,7 +21,7 @@ typedef enum
 
 } can2_msg_id_e;
 
-void send_shoot_17mm_data(robot_status_t *robot_status);
+void send_shoot_17mm_data(robot_status_t *robot_status) ;
 void send_shoot_judge_data(void);
 motor_msg_t *get_yaw_motor_msg_point(void);
 void can2_message_progress(CAN_RxHeaderTypeDef *pHeader, uint8_t aData[]);

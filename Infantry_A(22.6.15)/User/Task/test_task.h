@@ -141,9 +141,57 @@ typedef  struct
 
 */
 
+//typedef  struct
+//{
+//	uint8_t graphic_name[3];     //图形名（在删除，修改等操作中，作为客户端的索引）    
+//	//图像配置  （协议上有可参考）
+//	uint32_t operate_tpye:3;     //图形操作
+//	uint32_t graphic_tpye:3;     //图形类型
+//	uint32_t layer:4;            //图层数
+//	uint32_t color:4;            //颜色
+//    
+//	uint32_t start_angle:9;      //起始角度
+//	uint32_t end_angle:9;        //终止角度
+
+//	uint32_t width:10;           //线宽
+//	uint32_t start_x:11;         //起点x坐标
+//	uint32_t start_y:11;         //起点y坐标
+
+//	uint32_t radius:10;          //字体大小或者半径
+//	uint32_t end_x:11;           //终点x坐标
+//	uint32_t end_y:11;           //终点y坐标
+
+//}graphic_data_struct_t; //图形数据
 
 
+//typedef struct
+//{ 
+//   uint8_t graphic_name[3]; 		//图形名（在删除，修改等操作中，作为客户端的索引）  
+//   uint32_t operate_tpye:3; 	
+//   uint32_t graphic_tpye:3; 
+//   uint32_t layer:4; 
+//   uint32_t color:4; 
+//   uint32_t start_angle:9;
+//   uint32_t end_angle:9;
+//   uint32_t width:10; 
+//   uint32_t start_x:11; 
+//   uint32_t start_y:11;
+//   float graph_Float;              //浮点数据
+//} float_data_struct_t;
 
+//typedef struct
+//{ 
+//   uint8_t graphic_name[3]; 		//图形名（在删除，修改等操作中，作为客户端的索引）  
+//   uint32_t operate_tpye:3; 	
+//   uint32_t graphic_tpye:3; 
+//   uint32_t layer:4; 
+//   uint32_t color:4; 
+//   uint32_t start_angle:9;
+//   uint32_t width:10; 
+//   uint32_t start_x:11; 
+//   uint32_t start_y:11;
+//   int graph_int;              //整形数据
+//} int_data_struct_t;
 
 typedef struct
 {

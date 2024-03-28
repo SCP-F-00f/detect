@@ -270,6 +270,7 @@ typedef __packed struct  //0x0201 己方机器人数据
 	uint16_t maximum_HP;
 	uint16_t shooter_barrel_cooling_value;
 	uint16_t shooter_barrel_heat_limit;
+	uint16_t shooter_17mm_speed_limit;
 	uint16_t chassis_power_limit; 
 	uint8_t power_management_gimbal_output : 1;
 	uint8_t power_management_chassis_output : 1;
@@ -452,7 +453,7 @@ typedef __packed struct  //绘制UI UI图形数据
 
 typedef __packed struct	//0x0110 绘制字符
 {
-interaction_figure_t grapic_data_struct;
+graphic_data_struct_t grapic_data_struct;
 uint8_t data[30];
 } ext_client_custom_character_t;
 

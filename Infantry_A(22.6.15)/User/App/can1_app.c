@@ -27,31 +27,6 @@ motor_msg_t cm1_msg = {0};
 motor_msg_t cm2_msg = {0};
 motor_msg_t cm3_msg = {0};
 motor_msg_t cm4_msg = {0};
-
-
-power_control_t power_control = {0};
-
-static void chassis_power_msg_cap(power_control_t *m, uint8_t aData[])
-{
-	m->cap = ((aData[0]<<8)|aData[1]);
-}
-
-static void chassis_power_msg_power(power_control_t *m, uint8_t aData[])
-{
-	m->power = ((aData[0]<<8)|aData[1]);
-}
-
-static void chassis_power_msg_max_power(power_control_t *m, uint8_t aData[])
-{
-	m->max_power = ((aData[0]<<8)|aData[1]);
-}
-
-static void chassis_power_msg_voltage(power_control_t *m, uint8_t aData[])
-{
-	m->voltage = ((aData[0]<<8)|aData[1]);
-	m->real_voltage = (m->voltage)*0.01231f;
-}
-
 /**
   * @brief          
   * @author         
@@ -107,8 +82,8 @@ static void chassis_motor_msg_process(motor_msg_t *m, uint8_t aData[])
 	}
 	m->encoder.filter_rate = (int32_t)(m->encoder.filter_rate_sum/RATE_BUF_SIZE);	
 	/*---------------------非编码器数据------------------------*/
-	m->speed_rpm = (uint16_t)(aData[2] << 8 | aData[3]);     
-	m->given_current = (uint16_t)(aData[4] << 8 | aData[5]); 
+	m->speed_rpm = (int16_t)(aData[2] << 8 | aData[3]);     
+	m->given_current = (int16_t)(aData[4] << 8 | aData[5]); 
 	m->temperate = aData[6];         
 }
 /**
@@ -143,26 +118,8 @@ void can1_message_progress(CAN_RxHeaderTypeDef *pHeader, uint8_t aData[])
 		{
 			chassis_motor_msg_process(&cm4_msg ,aData);            
 		}break;
-		case 0x00:
-		{
-			chassis_power_msg_cap(&power_control ,aData);            
-		}break;
-//		case 0x212:
-//		{
-//			chassis_power_msg_power(&power_control ,aData);            
-//		}break;
-//		case 0x213:
-//		{
-//			chassis_power_msg_max_power(&power_control ,aData);            
-//		}break;
-//		case 0x214:
-//		{
-//			chassis_power_msg_voltage(&power_control ,aData);            
-//		}break;
 	}
 }
-
-
 /**
   * @brief          
   * @author         
@@ -173,7 +130,7 @@ void can1_message_progress(CAN_RxHeaderTypeDef *pHeader, uint8_t aData[])
 		   电机的发送频率为1KHZ，转子位置0-8191 对应 360也是就分辨率为0.04394531..(转子的)
 		   减速比为1：19 也就是对应转轴转速为分辨率为0.002312911       
   */
-void set_chassis_behaviour(int16_t cm1_iq, int16_t cm2_iq, int16_t cm3_iq, int16_t cm4_iq)
+void set_chassis_behaviour(int16_t cm1_iq, int16_t cm2_iq, int16_t cm3_iq, int16_t cm4_iq)  
 {
     can1_tx_header.StdId = CAN1_CHASSIS_STD_ID;
     can1_tx_header.IDE = CAN_ID_STD;
@@ -223,8 +180,8 @@ void set_chassis_power(uint16_t temPower)    //底盘控制功率
     can1_tx_header.RTR = CAN_RTR_DATA;
     can1_tx_header.DLC = 0x08;
     
-    can1_tx_data[0] = (uint8_t)temPower;
-    can1_tx_data[1] = (uint8_t)0;
+    can1_tx_data[0] = (uint8_t)(temPower >> 8);
+    can1_tx_data[1] = (uint8_t)temPower;
     can1_tx_data[2] = (uint8_t)(0 >> 8);
     can1_tx_data[3] = (uint8_t)0;
     can1_tx_data[4] = (uint8_t)(0 >> 8);
