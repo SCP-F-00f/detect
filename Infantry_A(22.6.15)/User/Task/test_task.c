@@ -40,169 +40,6 @@ int Operator_ID(void)
 	return Operator_id;
 }
 
-/*
-UI结构体录入字符串
-
-输入参数
-				string_data_struct 打印字符串数据结构体
-				name[3]	图片名字
-				operate	图片操作
-				layer		图片层数
-				color		颜色
-				size		字体大小	
-				length	字符长度
-				width		线条宽度
-				start_x	开始x坐标
-				start_y	开始y坐标
-				Data		字符串数据
-*/
-void UI_char(string_data_struct_t_* string_data_struct, uint8_t name[3],uint32_t operate, uint32_t layer,uint32_t color,uint32_t size,uint32_t length,uint32_t width,uint32_t start_x,uint32_t start_y,uint8_t* Data )
-{	
-	for(int i=0;i<3;i++)
-		string_data_struct->graphic_data_struct.graphic_name[i]=name[i];
-	
-	string_data_struct->graphic_data_struct.operate_tpye=operate;
-	string_data_struct->graphic_data_struct.graphic_tpye=UI_Graph_Char;
-	string_data_struct->graphic_data_struct.layer=layer;
-	string_data_struct->graphic_data_struct.color=color;
-	
-	string_data_struct->graphic_data_struct.start_angle=size;
-	string_data_struct->graphic_data_struct.end_angle=length;
-	string_data_struct->graphic_data_struct.width=width;
-	string_data_struct->graphic_data_struct.start_x=start_x;
-	string_data_struct->graphic_data_struct.start_y=start_y;
-	
-	for(int i=0;i<length;i++)
-		string_data_struct->show_Data[i]=Data[i];
-}
-
-/*
-UI结构体录入浮点数
-
-输入参数
-				float_data_struct_t		浮点数数据结构体
-				name[3]	图片名字
-				operate	图片操作
-				layer		图片层数
-				color		颜色
-				size		字体大小	
-				sign_bit 小数点有效位置
-				width		线条宽度
-				start_x	开始x坐标
-				start_y	开始y坐标
-				Data		浮点数数据
-*/
-//void UI_float(float_data_struct_t* float_data_struct, uint8_t name[3],uint32_t operate, uint32_t layer,uint32_t color,uint32_t size,uint32_t sign_bit,uint32_t width,uint32_t start_x,uint32_t start_y,float Data )
-//{	
-//	for(int i=0;i<3;i++)
-//		float_data_struct->graphic_name[i]=name[i];
-//	
-//	float_data_struct->operate_tpye=operate;
-//	float_data_struct->graphic_tpye=UI_Graph_Float;
-//	float_data_struct->layer=layer;
-//	float_data_struct->color=color;
-//	
-//	float_data_struct->start_angle=size;
-//	float_data_struct->end_angle=sign_bit;
-//	float_data_struct->width=width;
-//	float_data_struct->start_x=start_x;
-//	float_data_struct->start_y=start_y;
-//	float_data_struct->graph_Float=Data;
-//}
-
-void UI_float(graphic_data_struct_t* graphic_data_struct, uint8_t name[3],uint32_t operate, uint32_t layer,uint32_t color,uint32_t size,uint32_t sign_bit,uint32_t width,uint32_t start_x,uint32_t start_y,float Data )
-{	
-	uint32_t data=0;
-	for(int i=0;i<3;i++)
-		graphic_data_struct->graphic_name[i]=name[i];
-	
-	graphic_data_struct->operate_tpye=operate;
-	graphic_data_struct->graphic_tpye=UI_Graph_Float;
-	graphic_data_struct->layer=layer;
-	graphic_data_struct->color=color;
-	
-	graphic_data_struct->start_angle=size;
-	graphic_data_struct->end_angle=sign_bit;
-	graphic_data_struct->width=width;
-	graphic_data_struct->start_x=start_x;
-	graphic_data_struct->start_y=start_y;
-	
-	data=Data*1000;
-	graphic_data_struct->radius= data			&0x0000003f;
-	graphic_data_struct->end_x= (data>>10)&0x0000007f;
-	graphic_data_struct->end_y= (data>>21)&0x0000007f;
-}
-
-
-
-/*
-UI结构体录入整型
-
-输入参数
-				int_data_struct_t		整形数据结构体
-				name[3]	图片名字
-				operate	图片操作
-				layer		图片层数
-				color		颜色
-				size		字体大小	
-				width		线条宽度
-				start_x	开始x坐标
-				start_y	开始y坐标
-				Data		整形数据
-*/
-void UI_int(graphic_data_struct_t* graphic_data_struct, uint8_t name[3],uint32_t operate, uint32_t layer,uint32_t color,uint32_t size,uint32_t width,uint32_t start_x,uint32_t start_y,uint32_t Data  )
-{	
-	for(int i=0;i<3;i++)
-		graphic_data_struct->graphic_name[i]=name[i];
-	
-	graphic_data_struct->operate_tpye=operate;
-	graphic_data_struct->graphic_tpye=UI_Graph_Float;
-	graphic_data_struct->layer=layer;
-	graphic_data_struct->color=color;
-	
-	graphic_data_struct->start_angle=size;
-	graphic_data_struct->width=width;
-	graphic_data_struct->start_x=start_x;
-	graphic_data_struct->start_y=start_y;
-	
-	graphic_data_struct->radius= Data			&0x0000003f;
-	graphic_data_struct->end_x= (Data>>10)&0x0000007f;
-	graphic_data_struct->end_y= (Data>>21)&0x0000007f ;
-}
-//void UI_int(int_data_struct_t* int_data_struct, uint8_t name[3],uint32_t operate, uint32_t layer,uint32_t color,uint32_t size,uint32_t width,uint32_t start_x,uint32_t start_y,int Data  )
-//{	
-//	for(int i=0;i<3;i++)
-//		int_data_struct->graphic_name[i]=name[i];
-//	
-//	int_data_struct->operate_tpye=operate;
-//	int_data_struct->graphic_tpye=UI_Graph_Float;
-//	int_data_struct->layer=layer;
-//	int_data_struct->color=color;
-//	
-//	int_data_struct->start_angle=size;
-//	int_data_struct->width=width;
-//	int_data_struct->start_x=start_x;
-//	int_data_struct->start_y=start_y;
-//	int_data_struct->graph_int=Data;
-//}
-
-
-/*
-UI结构体录入图像
-
-输入参数
-				graphic_data_struct_t		图片数据结构体
-				name[3]	图片名字
-				operate	图片操作
-				graphic	图片类型（直线，椭圆，矩形）
-				layer		图片层数
-				color		颜色
-				width		线条宽度
-				start_x	直线（开始x坐标）	矩形（开始x坐标）		椭圆（圆心x坐标）
-				start_y	直线（开始y坐标）	矩形（开始y坐标）		椭圆（圆心y坐标）
-				end_x		直线（终点x坐标）	矩形（对角线x坐标）	椭圆（x半轴长度）
-				end_y		直线（终点y坐标）	矩形（对角线y坐标）	椭圆（y半轴长度）
-*/
 void UI_graphic(graphic_data_struct_t* graphic_data_struct, uint8_t name[3],uint32_t operate,uint32_t graphic ,uint32_t layer,uint32_t color,uint32_t width,uint32_t start_x,uint32_t start_y,uint32_t end_x,uint32_t end_y )
 {	
 	for(int i=0;i<3;i++)
@@ -220,73 +57,214 @@ void UI_graphic(graphic_data_struct_t* graphic_data_struct, uint8_t name[3],uint
 	graphic_data_struct->end_y=end_y;
 }
 
-/*
-UI结构体录入圆
-
-输入参数
-				graphic_data_struct_t		图片数据结构体
-				name[3]	图片名字
-				operate	图片操作
-				layer		图片层数
-				color		颜色
-				width		线条宽度
-				start_x	圆心x坐标
-				start_y	圆心y坐标
-				radius	半径
-		
-				
-*/
-void UI_circle(graphic_data_struct_t* graphic_data_struct, uint8_t name[3],uint32_t operate,uint32_t graphic ,uint32_t layer,uint32_t color,uint32_t width,uint32_t start_x,uint32_t start_y,uint32_t radius )
+void UI_Line(interaction_figure_t* graphic_data_struct, uint8_t name[3],       \
+	uint32_t operate,uint32_t layer,uint32_t color,           \
+	uint32_t width,uint32_t start_x,uint32_t start_y,uint32_t end_x,uint32_t end_y )
 {	
 	for(int i=0;i<3;i++)
-		graphic_data_struct->graphic_name[i]=name[i];
+	graphic_data_struct->figure_name[i]=name[i];
 	
 	graphic_data_struct->operate_tpye=operate;
-	graphic_data_struct->graphic_tpye=UI_Graph_Circle;
+	graphic_data_struct->figure_tpye=UI_Graph_Line;
 	graphic_data_struct->layer=layer;
 	graphic_data_struct->color=color;
+
+	graphic_data_struct->details_a = 0;
+	graphic_data_struct->details_b = 0;
+	
+	graphic_data_struct->width=width;
+	graphic_data_struct->start_x=start_x;
+	graphic_data_struct->start_y=start_y;
+	
+	graphic_data_struct->details_c=0;
+	graphic_data_struct->details_d=end_x;
+	graphic_data_struct->details_e=end_y;
+}
+
+void UI_Rectangle(interaction_figure_t* graphic_data_struct, uint8_t name[3],            \
+	uint32_t operate,uint32_t graphic ,uint32_t layer,uint32_t color,                       \
+	uint32_t width,uint32_t start_x,uint32_t start_y,       \
+	uint32_t end_x,uint32_t end_y)
+{	
+
+	for(int i=0;i<3;i++)
+	graphic_data_struct->figure_name[i]=name[i];
+	
+	graphic_data_struct->operate_tpye=operate;
+	graphic_data_struct->figure_tpye=UI_Graph_Rectangle;
+	graphic_data_struct->layer=layer;
+	graphic_data_struct->color=color;
+
+	graphic_data_struct->details_a = 0;
+	graphic_data_struct->details_b = 0;
+	
+
 
 	graphic_data_struct->width=width;
 	graphic_data_struct->start_x=start_x;
 	graphic_data_struct->start_y=start_y;
-	graphic_data_struct->radius=radius;
+	
+	
+	graphic_data_struct->details_c=0;
+	graphic_data_struct->details_d=end_x;
+	graphic_data_struct->details_e=end_y;
 }
 
 
-/*
-UI结构体录入圆弧
-
-输入参数
-				graphic_data_struct_t 图片数据结构体
-				name[3]	图片名字
-				operate	图片操作
-				layer		图片层数
-				color		颜色
-				width		线条宽度
-				start_angle 圆弧开始角度
-				end_angle		圆弧结束角度
-				start_x	圆心x坐标
-				start_y	圆心y坐标
-				end_x		x半轴长度
-				end_y		y半轴长度
-*/
-void UI_arc(graphic_data_struct_t* graphic_data_struct, uint8_t name[3],uint32_t operate,uint32_t layer,uint32_t color,uint32_t start_angle,uint32_t end_angle,uint32_t width,uint32_t start_x,uint32_t start_y,uint32_t end_x,uint32_t end_y )
+void UI_Circle(interaction_figure_t* graphic_data_struct, uint8_t name[3],	\
+	uint32_t operate,uint32_t graphic ,uint32_t layer,uint32_t color,	\
+	uint32_t width,uint32_t start_x,uint32_t start_y,uint32_t radius )
 {	
 	for(int i=0;i<3;i++)
-		graphic_data_struct->graphic_name[i]=name[i];
+	graphic_data_struct->figure_name[i]=name[i];
 	
 	graphic_data_struct->operate_tpye=operate;
-	graphic_data_struct->graphic_tpye=UI_Graph_Arc;
+	graphic_data_struct->figure_tpye=UI_Graph_Circle;
 	graphic_data_struct->layer=layer;
 	graphic_data_struct->color=color;
 
-	graphic_data_struct->start_angle=start_angle;
-	graphic_data_struct->end_angle=end_angle;
+	graphic_data_struct->details_a = 0;
+	graphic_data_struct->details_b = 0;
+	
 	graphic_data_struct->width=width;
 	graphic_data_struct->start_x=start_x;
 	graphic_data_struct->start_y=start_y;
-	graphic_data_struct->end_x=end_x;
-	graphic_data_struct->end_y=end_y;
+	
+	graphic_data_struct->details_c=radius;
+	graphic_data_struct->details_d=0;
+	graphic_data_struct->details_e=0;
+}
+void UI_Ellipse(interaction_figure_t* graphic_data_struct, uint8_t name[3],            \
+	uint32_t operate,uint32_t graphic ,uint32_t layer,uint32_t color,                       \
+	uint32_t width,uint32_t start_x,uint32_t start_y,       \
+	uint32_t XHalfAxis,uint32_t YHalfAxis)
+{	
+	for(int i=0;i<3;i++)
+	graphic_data_struct->figure_name[i]=name[i];
+	
+	graphic_data_struct->operate_tpye=operate;
+	graphic_data_struct->figure_tpye=UI_Graph_Ellipse;
+	graphic_data_struct->layer=layer;
+	graphic_data_struct->color=color;
+
+	graphic_data_struct->details_a = 0;
+	graphic_data_struct->details_b = 0;
+	
+
+	graphic_data_struct->width=width;
+	graphic_data_struct->start_x=start_x;
+	graphic_data_struct->start_y=start_y;
+	
+	
+	graphic_data_struct->details_c=0;
+	graphic_data_struct->details_d=XHalfAxis;
+	graphic_data_struct->details_e=YHalfAxis;
+}
+
+void UI_Arc(interaction_figure_t* graphic_data_struct, uint8_t name[3],	\
+	uint32_t operate,uint32_t layer,uint32_t color,	\
+	uint32_t start_angle,uint32_t end_angle,uint32_t width,	\
+	uint32_t start_x,uint32_t start_y,uint32_t XHalfAxis,uint32_t YHalfAxis )
+{	
+	for(int i=0;i<3;i++)
+	graphic_data_struct->figure_name[i]=name[i];
+	
+	graphic_data_struct->operate_tpye=operate;
+	graphic_data_struct->figure_tpye=UI_Graph_Arc;
+	graphic_data_struct->layer=layer;
+	graphic_data_struct->color=color;
+
+	graphic_data_struct->details_a = start_angle;
+	graphic_data_struct->details_b = end_angle;
+	
+	graphic_data_struct->width=width;
+	graphic_data_struct->start_x=start_x;
+	graphic_data_struct->start_y=start_y;
+	
+	graphic_data_struct->details_c=0;
+	graphic_data_struct->details_d=XHalfAxis;
+	graphic_data_struct->details_e=YHalfAxis;
+}
+
+
+
+
+void UI_Float(interaction_figure_t* graphic_data_struct, uint8_t name[3],	\
+	uint32_t operate, uint32_t layer,uint32_t color,	\
+	uint32_t size,uint32_t width,uint32_t start_x,uint32_t start_y,float Data )
+{	
+	uint32_t data=0;
+	for(int i=0;i<3;i++)
+	graphic_data_struct->figure_name[i]=name[i];
+	
+	graphic_data_struct->operate_tpye=operate;
+	graphic_data_struct->figure_tpye=UI_Graph_Float;
+	graphic_data_struct->layer=layer;
+	graphic_data_struct->color=color;
+
+	graphic_data_struct->details_a = size;
+	graphic_data_struct->details_b = 0;
+	
+	graphic_data_struct->width=width;
+	graphic_data_struct->start_x=start_x;
+	graphic_data_struct->start_y=start_y;
+	
+	data=Data*1000;
+	graphic_data_struct->details_c= data			&0x0000003f;
+	graphic_data_struct->details_d= (data>>10)&0x0000007f;
+	graphic_data_struct->details_e= (data>>21)&0x0000007f;
+}
+
+
+void UI_Int(interaction_figure_t* graphic_data_struct, uint8_t name[3],	\
+	uint32_t operate, uint32_t layer,uint32_t color,	\
+	uint32_t size,uint32_t width,uint32_t start_x,uint32_t start_y,uint32_t Data  )
+{	
+	for(int i=0;i<3;i++)
+	graphic_data_struct->figure_name[i]=name[i];
+	
+	graphic_data_struct->operate_tpye=operate;
+	graphic_data_struct->figure_tpye=UI_Graph_Int;
+	graphic_data_struct->layer=layer;
+	graphic_data_struct->color=color;
+	
+	graphic_data_struct->details_a=size;
+	graphic_data_struct->details_b = 0;
+	
+	graphic_data_struct->width=width;
+	graphic_data_struct->start_x=start_x;
+	graphic_data_struct->start_y=start_y;
+	
+	graphic_data_struct->details_c= Data			&0x0000003f;
+	graphic_data_struct->details_d= (Data>>10)&0x0000007f;
+	graphic_data_struct->details_e= (Data>>21)&0x0000007f ;
+}
+
+void UI_Char(ext_client_custom_character_t* string_data_struct, uint8_t name[3],          \
+	uint32_t operate, uint32_t layer,uint32_t color,     \
+	uint32_t size,uint32_t length,uint32_t width,uint32_t start_x,uint32_t start_y,uint8_t* Data )
+{	
+	for(int i=0;i<3;i++)
+	string_data_struct->grapic_data_struct.figure_name[i]=name[i];
+	
+	string_data_struct->grapic_data_struct.operate_tpye=operate;
+	string_data_struct->grapic_data_struct.figure_tpye=UI_Graph_Char;
+	string_data_struct->grapic_data_struct.layer=layer;
+	string_data_struct->grapic_data_struct.color=color;
+	
+	string_data_struct->grapic_data_struct.details_a = size;
+	string_data_struct->grapic_data_struct.details_b = length;
+	
+	string_data_struct->grapic_data_struct.width=width;
+	string_data_struct->grapic_data_struct.start_x=start_x;
+	string_data_struct->grapic_data_struct.start_y=start_y;
+	
+	string_data_struct->grapic_data_struct.details_c=0;
+	string_data_struct->grapic_data_struct.details_d=0;
+	string_data_struct->grapic_data_struct.details_e=0;
+	
+	for(int i=0;i<length;i++)
+	string_data_struct->data[i]=Data[i];
 }
 
 /*
@@ -297,7 +275,7 @@ void UI_arc(graphic_data_struct_t* graphic_data_struct, uint8_t name[3],uint32_t
 				...	graphic_data_struct_t类型的图片类型
 */
 
-void UI_graphic_ReFresh(int cnt,...)
+void UI_Graphic_ReFresh(int cnt,...)
 {
 	ext_Send_User_Data_t	ShowData;			//客户端信息
 	graphic_data_struct_t graphic_data;
@@ -363,7 +341,7 @@ void UI_graphic_ReFresh(int cnt,...)
 				string_data_struct_t_	字符串数据结构体
 */
 
-void UI_char_ReFresh(string_data_struct_t_* string_data_struct)
+void UI_Char_ReFresh(ext_client_custom_character_t* string_data_struct)
 {
 	ext_Send_User_Data_t	ShowData;
 	uint8_t CliendTxBuffer[SEND_MAX_LEN];
@@ -438,29 +416,77 @@ void UI_Del(uint8_t operate,uint8_t layer)
 	
 	UI_Seq++;
 }
+interaction_figure_t	G1;
+interaction_figure_t	G2;
+interaction_figure_t G3;
+ext_client_custom_character_t	G4;
+interaction_figure_t G5;
+UI_Graph7_t UI_Graph7;
 
 
-graphic_data_struct_t	G1;
-graphic_data_struct_t	G2;
-graphic_data_struct_t G3;
-string_data_struct_t_	G4;
-graphic_data_struct_t G5;
+/* ??????????? */
+uint16_t y01 = 455;
+uint16_t y02 = 420;
+uint16_t y03 = 280;
+uint16_t y04 = 230;
+
+uint8_t UI_Capacitance=30;
+float Capacitance_X;
+float X = 1850.0f;
+
+interaction_figure_t	G10;
+interaction_figure_t	G11;
+interaction_figure_t	G12;
+interaction_figure_t	G13;
+interaction_figure_t	G14;
+interaction_figure_t	G15;
+interaction_figure_t	G16;
+
+interaction_figure_t	G20;
 void test_task(void *argument)
 {
-
+	uint16_t UI_PushUp_Counter = 261;
 
     while(1)
     {		
+//			UI_PushUp_Counter++;
 
-			UI_graphic(&G1,"1",UI_Graph_ADD,UI_Graph_Line,1,UI_Color_Main,4,0,0,500,500);
-			UI_graphic(&G2,"2",UI_Graph_ADD,UI_Graph_Line,2,UI_Color_Main,4,600,600,1000,200);
-			UI_graphic_ReFresh(2,G1,G2);
-			UI_graphic(&G3,"3",UI_Graph_ADD,UI_Graph_Rectangle,1,UI_Color_Main,4,200,200,1500,500);
-			UI_graphic_ReFresh(1,G3);
-			UI_char(&G4,"4",UI_Graph_ADD,1,UI_Color_Main,4,3,3,1000,500,"ABC");
-			UI_char_ReFresh(&G4);
+//		if(UI_PushUp_Counter % 321 == 0)
+//		{
+//			UI_Line(&G10, "008", UI_Graph_Add, 0, UI_Color_Green, 1,  900,   y03,  940,   y03); //???????????
+//			UI_Line(&G11, "009", UI_Graph_Add, 0, UI_Color_Green, 5,  959,   y03,  960,   y03); //???????????
+//			UI_Line(&G12, "010", UI_Graph_Add, 0, UI_Color_Green, 1,  980,   y03, 1020,   y03); //???????????
+//			UI_Line(&G13, "011", UI_Graph_Add, 0, UI_Color_Green, 1,  930,   y04,  950,   y04); //???????????
+//			UI_Line(&G14, "012", UI_Graph_Add, 0, UI_Color_Green, 5,  959,   y04,  960,   y04); //???????????
+//			UI_Line(&G15, "013", UI_Graph_Add, 0, UI_Color_Green, 1,  970,   y04,  990,   y04); //???????????
+//			UI_Line(&G16, "014", UI_Graph_Add, 0, UI_Color_Green, 1,  960,y04-10,  960,y04-30); //????????????
+//			UI_Graphic_ReFresh(7,G10,G11,G12,G13,G14,G15,G16);
+//			UI_Graphic_ReFresh(2,G10,G11);
+//			HAL_Delay(20);
+//			UI_Graphic_ReFresh(2,G12,G13);
+//			HAL_Delay(20);
+//			UI_Graphic_ReFresh(2,G14,G15);
+//			HAL_Delay(20);
+//			UI_Graphic_ReFresh(1,G16);
+//			HAL_Delay(20);
+//			continue;
+//		}		
+//		if(UI_PushUp_Counter % 10 == 0)
+			UI_Line(&G20, "202", UI_Graph_Add, 2, UI_Color_Orange, 20, Capacitance_X, 334, 1870, 334);
+			UI_Graphic_ReFresh(1,G20);
+			while(1)
+			{
+//			{				
+			Capacitance_X  = X - 4.1f * UI_Capacitance;
+			if(50 < UI_Capacitance && UI_Capacitance <= 100) UI_Line(&G20, "202", UI_Graph_Change, 2, UI_Color_Green , 20, Capacitance_X, 334, 1870, 334);
+			if(35 < UI_Capacitance && UI_Capacitance <=  50) UI_Line(&G20, "202", UI_Graph_Change, 2, UI_Color_Yellow, 20, Capacitance_X, 334, 1870, 334);
+			if(0  < UI_Capacitance && UI_Capacitance <=  35) UI_Line(&G20, "202", UI_Graph_Change, 2, UI_Color_Orange, 20, Capacitance_X, 334, 1870, 334);
+			UI_Graphic_ReFresh(1,G20);
 			
-			vTaskDelay(TRANSMIT_SHOW_DATA_TIME);       //35ms一次
+//				continue;
+			}
+				
+			vTaskDelay(TRANSMIT_SHOW_DATA_TIME);       //35ms???
     }
 }
 

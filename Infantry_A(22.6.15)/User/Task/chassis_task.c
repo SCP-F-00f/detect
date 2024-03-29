@@ -196,7 +196,7 @@ float rotate_add_w=0.6,rotate_add_s=0.1,rotate_add_a=0.1,rotate_add_d=0.1;
 void get_forward_back_value(chassis_control_data_t *chassis)
 {
 //	int16_t speed = 0;
-	if(move_close_flag)
+	if(move_close_flag)		
 	{
 		speed1=0;;
 		speed = 0;
@@ -204,13 +204,13 @@ void get_forward_back_value(chassis_control_data_t *chassis)
 		move_close_flag=0;
 	}
 	speed_factor1=(robot_status.chassis_power_limit/100.0-1)/0.6*(1-speed_min/speed_max)+1.0;
-	if(chassis->connect->can2_rc_ctrl.mouse.key & ((CHASSIS_FORWARD_KEY)|(CHASSIS_BACK_KEY)|(CHASSIS_LEFT_KEY)|(CHASSIS_RIGHT_KEY)))
+	if(chassis->connect->can2_rc_ctrl.mouse.key & ((CHASSIS_FORWARD_KEY)|(CHASSIS_BACK_KEY)|(CHASSIS_LEFT_KEY)|(CHASSIS_RIGHT_KEY)))		//方向键按下
 	{
 		speed1 += num1;
 		speed = speed1;
-		if(chassis->connect->can2_rc_ctrl.mouse.key & CHASSIS_HIGH_SPEED_KEY&&speed>speed_max*2)
+		if(chassis->connect->can2_rc_ctrl.mouse.key & CHASSIS_HIGH_SPEED_KEY&&speed>speed_max*2)		//加速
 			speed = speed_max*2;
-		else if(chassis->connect->can2_rc_ctrl.work_mode == ROBOT_ROTATE_MOTION_MODE)
+		else if(chassis->connect->can2_rc_ctrl.work_mode == ROBOT_ROTATE_MOTION_MODE)			//运动小陀螺
 				speed = speed_max-100;
 			else
 				speed = speed_max;
@@ -221,11 +221,11 @@ void get_forward_back_value(chassis_control_data_t *chassis)
 		close_flag=0;
 	}
 	
-	if(close_flag==0&&last_close_flag==1)
+	if(close_flag==0&&last_close_flag==1)			//松开方向键下一时刻
 		move_close_flag=1;
 	last_close_flag=close_flag;
 
-	if(chassis->connect->can2_rc_ctrl.control_mode == REMOTE_MODE)      
+	if(chassis->connect->can2_rc_ctrl.control_mode == REMOTE_MODE)      //遥控模式
 	{
 		if ( RC_abs(chassis->connect->can2_rc_ctrl.rc.ch3) < 500 || RC_abs(chassis->connect->can2_rc_ctrl.rc.ch2) < 500)
 		{

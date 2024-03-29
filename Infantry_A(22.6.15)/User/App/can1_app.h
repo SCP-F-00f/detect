@@ -8,6 +8,15 @@
 #define RATE_BUF_SIZE 6  //电机速度滑动滤波窗口大小
 #define CHASSIS_CAN hcan1
 
+typedef struct //?????????????????
+{
+	int16_t cap;
+	int16_t power;
+	int16_t max_power;
+	int16_t voltage;
+	float real_voltage;
+}power_control_t;
+
 typedef struct
 {
 	struct //匿名结构体定义结构体变量
