@@ -3,9 +3,9 @@
 <title>Static Call Graph - [HZU_Infantry_No1_A\HZU_Infantry_No1_A.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image HZU_Infantry_No1_A\HZU_Infantry_No1_A.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Sat Mar 30 00:34:55 2024
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Mon Apr 01 23:48:24 2024
 <BR><P>
-<H3>Maximum Stack Usage =        456 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =        544 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 test_task &rArr; UI_Graphic_ReFresh &rArr; HAL_UART_Transmit &rArr; UART_WaitOnFlagUntilTimeout
 <P>
@@ -59,7 +59,7 @@ Function Pointers
  <LI><a href="#[f]">FLASH_IRQHandler</a> from startup_stm32f427xx.o(.text) referenced from startup_stm32f427xx.o(RESET)
  <LI><a href="#[3b]">FMC_IRQHandler</a> from startup_stm32f427xx.o(.text) referenced from startup_stm32f427xx.o(RESET)
  <LI><a href="#[5b]">FPU_IRQHandler</a> from startup_stm32f427xx.o(.text) referenced from startup_stm32f427xx.o(RESET)
- <LI><a href="#[72]">GUI_task</a> from gui_task.o(i.GUI_task) referenced from start_task.o(i.start_task)
+ <LI><a href="#[73]">GUI_task</a> from gui_task.o(i.GUI_task) referenced from start_task.o(i.start_task)
  <LI><a href="#[5a]">HASH_RNG_IRQHandler</a> from startup_stm32f427xx.o(.text) referenced from startup_stm32f427xx.o(RESET)
  <LI><a href="#[3]">HardFault_Handler</a> from stm32f4xx_it.o(i.HardFault_Handler) referenced from startup_stm32f427xx.o(RESET)
  <LI><a href="#[2b]">I2C1_ER_IRQHandler</a> from startup_stm32f427xx.o(.text) referenced from startup_stm32f427xx.o(RESET)
@@ -134,7 +134,7 @@ Function Pointers
  <LI><a href="#[6f]">prvTaskExitError</a> from port.o(i.prvTaskExitError) referenced from port.o(i.pxPortInitialiseStack)
  <LI><a href="#[75]">prvTimerTask</a> from timers.o(i.prvTimerTask) referenced from timers.o(i.xTimerCreateTimerTask)
  <LI><a href="#[6b]">start_task</a> from start_task.o(i.start_task) referenced from freertos.o(i.MX_FREERTOS_Init)
- <LI><a href="#[73]">test_task</a> from test_task.o(i.test_task) referenced from start_task.o(i.start_task)
+ <LI><a href="#[72]">test_task</a> from test_task.o(i.test_task) referenced from start_task.o(i.start_task)
 </UL>
 <P>
 <H3>
@@ -434,7 +434,7 @@ Global Symbols
 <P><STRONG><a name="[197]"></a>__aeabi_memcpy</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, memcpya.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[198]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCopyDataToQueue
 <LI><a href="#[196]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCopyDataFromQueue
-<LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;test_task
+<LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;test_task
 </UL>
 
 <P><STRONG><a name="[1ce]"></a>__aeabi_memcpy4</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memcpya.o(.text), UNUSED)
@@ -832,10 +832,10 @@ Global Symbols
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Fill
 <LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_ms
 </UL>
-<BR>[Called By]<UL><LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_task
+<BR>[Called By]<UL><LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_task
 </UL>
 
-<P><STRONG><a name="[72]"></a>GUI_task</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, gui_task.o(i.GUI_task))
+<P><STRONG><a name="[73]"></a>GUI_task</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, gui_task.o(i.GUI_task))
 <BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = GUI_task &rArr; GUI_interaction &rArr; shoot_message &rArr; LED_PrintValueF &rArr; LED_PrintValueFP &rArr; LED_P6x8Char &rArr; LED_Set_Pos
 </UL>
 <BR>[Calls]<UL><LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Init
@@ -1507,7 +1507,7 @@ Global Symbols
 <LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LEDPIN_Init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-<LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_task
+<LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_task
 </UL>
 
 <P><STRONG><a name="[a3]"></a>LED_P6x8Char</STRONG> (Thumb, 74 bytes, Stack size 24 bytes, oled.o(i.LED_P6x8Char))
@@ -1942,20 +1942,20 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_ConfigClockSource
 </UL>
 
-<P><STRONG><a name="[130]"></a>UI_Graphic_ReFresh</STRONG> (Thumb, 288 bytes, Stack size 376 bytes, test_task.o(i.UI_Graphic_ReFresh))
-<BR><BR>[Stack]<UL><LI>Max Depth = 432<LI>Call Chain = UI_Graphic_ReFresh &rArr; HAL_UART_Transmit &rArr; UART_WaitOnFlagUntilTimeout
+<P><STRONG><a name="[130]"></a>UI_Graphic_ReFresh</STRONG> (Thumb, 294 bytes, Stack size 368 bytes, test_task.o(i.UI_Graphic_ReFresh))
+<BR><BR>[Stack]<UL><LI>Max Depth = 424<LI>Call Chain = UI_Graphic_ReFresh &rArr; HAL_UART_Transmit &rArr; UART_WaitOnFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Transmit
 <LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Append_CRC8_Check_Sum
 <LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Append_CRC16_Check_Sum
 </UL>
-<BR>[Called By]<UL><LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;test_task
+<BR>[Called By]<UL><LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;test_task
 </UL>
 
 <P><STRONG><a name="[1b5]"></a>UI_Line</STRONG> (Thumb, 154 bytes, Stack size 32 bytes, test_task.o(i.UI_Line))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = UI_Line
 </UL>
-<BR>[Called By]<UL><LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;test_task
+<BR>[Called By]<UL><LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;test_task
 </UL>
 
 <P><STRONG><a name="[30]"></a>USART1_IRQHandler</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, stm32f4xx_it.o(i.USART1_IRQHandler))
@@ -2659,7 +2659,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_rc_data_point
 </UL>
-<BR>[Called By]<UL><LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_task
+<BR>[Called By]<UL><LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_task
 </UL>
 
 <P><STRONG><a name="[183]"></a>robot_hurt_analysis</STRONG> (Thumb, 92 bytes, Stack size 4 bytes, rule.o(i.robot_hurt_analysis))
@@ -2739,12 +2739,13 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> freertos.o(i.MX_FREERTOS_Init)
 </UL>
-<P><STRONG><a name="[73]"></a>test_task</STRONG> (Thumb, 352 bytes, Stack size 24 bytes, test_task.o(i.test_task))
-<BR><BR>[Stack]<UL><LI>Max Depth = 456<LI>Call Chain = test_task &rArr; UI_Graphic_ReFresh &rArr; HAL_UART_Transmit &rArr; UART_WaitOnFlagUntilTimeout
+<P><STRONG><a name="[72]"></a>test_task</STRONG> (Thumb, 838 bytes, Stack size 120 bytes, test_task.o(i.test_task))
+<BR><BR>[Stack]<UL><LI>Max Depth = 544<LI>Call Chain = test_task &rArr; UI_Graphic_ReFresh &rArr; HAL_UART_Transmit &rArr; UART_WaitOnFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[197]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy
 <LI><a href="#[1b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UI_Line
 <LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UI_Graphic_ReFresh
+<LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskDelay
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> start_task.o(i.start_task)
 </UL>
@@ -2880,7 +2881,8 @@ Global Symbols
 <LI><a href="#[178]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskSuspendAll
 </UL>
 <BR>[Called By]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
-<LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_task
+<LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;test_task
+<LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_task
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GUI_interaction
 <LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;connect_task
 <LI><a href="#[70]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;chassis_task

@@ -274,12 +274,12 @@ void UI_Char(ext_client_custom_character_t* string_data_struct, uint8_t name[3],
 				cnt	输入几个图像，1，2，5，7
 				...	graphic_data_struct_t类型的图片类型
 */
-
+	uint8_t* client_Data;
 void UI_Graphic_ReFresh(int cnt,...)
 {
 	ext_Send_User_Data_t	ShowData;			//客户端信息
 	graphic_data_struct_t graphic_data;
-	uint8_t* client_Data;
+
 	uint8_t CliendTxBuffer[SEND_MAX_LEN];
 	
 	va_list UI;
@@ -429,7 +429,7 @@ uint16_t y01 = 455;
 uint16_t y02 = 420;
 uint16_t y03 = 280;
 uint16_t y04 = 230;
-
+uint16_t UI_PushUp_Counter = 261;
 uint8_t UI_Capacitance=30;
 float Capacitance_X;
 float X = 1850.0f;
@@ -445,22 +445,21 @@ interaction_figure_t	G16;
 interaction_figure_t	G20;
 void test_task(void *argument)
 {
-	uint16_t UI_PushUp_Counter = 261;
+	vTaskDelay(300);
 
     while(1)
-    {		
-//			UI_PushUp_Counter++;
-
-//		if(UI_PushUp_Counter % 321 == 0)
-//		{
-//			UI_Line(&G10, "008", UI_Graph_Add, 0, UI_Color_Green, 1,  900,   y03,  940,   y03); //???????????
-//			UI_Line(&G11, "009", UI_Graph_Add, 0, UI_Color_Green, 5,  959,   y03,  960,   y03); //???????????
-//			UI_Line(&G12, "010", UI_Graph_Add, 0, UI_Color_Green, 1,  980,   y03, 1020,   y03); //???????????
-//			UI_Line(&G13, "011", UI_Graph_Add, 0, UI_Color_Green, 1,  930,   y04,  950,   y04); //???????????
-//			UI_Line(&G14, "012", UI_Graph_Add, 0, UI_Color_Green, 5,  959,   y04,  960,   y04); //???????????
-//			UI_Line(&G15, "013", UI_Graph_Add, 0, UI_Color_Green, 1,  970,   y04,  990,   y04); //???????????
-//			UI_Line(&G16, "014", UI_Graph_Add, 0, UI_Color_Green, 1,  960,y04-10,  960,y04-30); //????????????
-//			UI_Graphic_ReFresh(7,G10,G11,G12,G13,G14,G15,G16);
+    {
+			UI_PushUp_Counter++;
+		if(UI_PushUp_Counter % 101 == 0)
+		{
+			UI_Line(&G10, "008", UI_Graph_Add, 0, UI_Color_Green, 1,  900,   y03,  940,   y03); //???????????
+			UI_Line(&G11, "009", UI_Graph_Add, 0, UI_Color_Green, 5,  959,   y03,  960,   y03); //???????????
+			UI_Line(&G12, "010", UI_Graph_Add, 0, UI_Color_Green, 1,  980,   y03, 1020,   y03); //???????????
+			UI_Line(&G13, "011", UI_Graph_Add, 0, UI_Color_Green, 1,  930,   y04,  950,   y04); //???????????
+			UI_Line(&G14, "012", UI_Graph_Add, 0, UI_Color_Green, 5,  959,   y04,  960,   y04); //???????????
+			UI_Line(&G15, "013", UI_Graph_Add, 0, UI_Color_Green, 1,  970,   y04,  990,   y04); //???????????
+			UI_Line(&G16, "014", UI_Graph_Add, 0, UI_Color_Green, 1,  960,y04-10,  960,y04-30); //????????????
+			UI_Graphic_ReFresh(7,G10,G11,G12,G13,G14,G15,G16);
 //			UI_Graphic_ReFresh(2,G10,G11);
 //			HAL_Delay(20);
 //			UI_Graphic_ReFresh(2,G12,G13);
@@ -469,23 +468,22 @@ void test_task(void *argument)
 //			HAL_Delay(20);
 //			UI_Graphic_ReFresh(1,G16);
 //			HAL_Delay(20);
-//			continue;
-//		}		
-//		if(UI_PushUp_Counter % 10 == 0)
+			continue;
+		}		
+		if(UI_PushUp_Counter % 261 == 0)
+		{
 			UI_Line(&G20, "202", UI_Graph_Add, 2, UI_Color_Orange, 20, Capacitance_X, 334, 1870, 334);
 			UI_Graphic_ReFresh(1,G20);
-			while(1)
-			{
-//			{				
+		}
+		if(UI_PushUp_Counter % 11 == 0)
+		{
 			Capacitance_X  = X - 4.1f * UI_Capacitance;
 			if(50 < UI_Capacitance && UI_Capacitance <= 100) UI_Line(&G20, "202", UI_Graph_Change, 2, UI_Color_Green , 20, Capacitance_X, 334, 1870, 334);
 			if(35 < UI_Capacitance && UI_Capacitance <=  50) UI_Line(&G20, "202", UI_Graph_Change, 2, UI_Color_Yellow, 20, Capacitance_X, 334, 1870, 334);
 			if(0  < UI_Capacitance && UI_Capacitance <=  35) UI_Line(&G20, "202", UI_Graph_Change, 2, UI_Color_Orange, 20, Capacitance_X, 334, 1870, 334);
-			UI_Graphic_ReFresh(1,G20);
-			
-//				continue;
-			}
-				
+			UI_Graphic_ReFresh(1,G20);				
+			continue;
+		}
 			vTaskDelay(TRANSMIT_SHOW_DATA_TIME);       //35ms???
     }
 }

@@ -49,8 +49,8 @@ void GUI_task(void *argument);
 osThreadId_t test_task_Handler;
 const osThreadAttr_t test_task_attr = {
   .name = "test_task",
-  .priority = (osPriority_t) osPriorityNormal5,
-  .stack_size = 128 * 4 
+  .priority = (osPriority_t) osPriorityHigh ,
+  .stack_size = 2048 * 4 
 };
 void test_task(void *argument);
 
@@ -62,10 +62,10 @@ void start_task(void *argument)
   chassis_task_Handler = osThreadNew(chassis_task, NULL, &chassis_task_attr);
 	//create connect_task
 	connect_task_Handler = osThreadNew(connect_task, NULL, &connect_task_attr);
+		//create test_task				
+	test_task_Handler = osThreadNew(test_task, NULL, &test_task_attr);
   //create GUI_task				
 	GUI_task_Handler = osThreadNew(GUI_task, NULL, &GUI_task_attr);
-	//create test_task				
-	test_task_Handler = osThreadNew(test_task, NULL, &test_task_attr);
   //½âËø
   osKernelUnlock();
 
