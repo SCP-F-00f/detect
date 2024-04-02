@@ -56,6 +56,13 @@ typedef union float_char_
 }float_char;
 void connect_gyro_data_process(connect_t *connect_data, uint8_t aData[])
 {
+	if(aData[0]=='J'&&aData[3]=='K')
+	{
+	connect_data->recog_flag=aData[1];//1有 0无
+  connect_data->vision_flag=aData[2];//1按下 -1松
+	}
+	else
+	{
 	float_char f_c;
 	f_c.c[0] = aData[0];
 	f_c.c[1] = aData[1];
@@ -68,11 +75,15 @@ void connect_gyro_data_process(connect_t *connect_data, uint8_t aData[])
 	f_c.c[3] = aData[7];
 	connect_data->can2_rc_ctrl.gyro.yaw_fdb = f_c.f/10;
 	connect_data->receive_rc_data_flag = 1;//表示已经接收到了can2的rc数据
-
+	}
 }
 
-
-
+void get_uiflag_to_chassis(connect_t *connect_data, uint8_t aData[])
+{
+  connect_data->recog_flag=aData[0];;
+  connect_data->vision_flag=aData[1];
+	
+}
 
 
 /**

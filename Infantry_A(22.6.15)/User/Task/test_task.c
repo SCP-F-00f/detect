@@ -10,7 +10,7 @@
 #include "usart.h"
 #include "stdarg.h"
 #include "judge.h"
-
+#include "connect_task.h"
 
 uint8_t UI_Seq=0;	//包序号
 
@@ -441,47 +441,77 @@ interaction_figure_t	G13;
 interaction_figure_t	G14;
 interaction_figure_t	G15;
 interaction_figure_t	G16;
+//interaction_figure_t	G20;
 
-interaction_figure_t	G20;
+ext_client_custom_character_t C1;
+ext_client_custom_character_t C2;
+extern connect_t connect_data;
 void test_task(void *argument)
 {
 	vTaskDelay(300);
 
     while(1)
     {
-			UI_PushUp_Counter++;
+		UI_PushUp_Counter++;
+		//视觉标志位
 		if(UI_PushUp_Counter % 101 == 0)
 		{
-			UI_Line(&G10, "008", UI_Graph_Add, 0, UI_Color_Green, 1,  900,   y03,  940,   y03); //???????????
-			UI_Line(&G11, "009", UI_Graph_Add, 0, UI_Color_Green, 5,  959,   y03,  960,   y03); //???????????
-			UI_Line(&G12, "010", UI_Graph_Add, 0, UI_Color_Green, 1,  980,   y03, 1020,   y03); //???????????
-			UI_Line(&G13, "011", UI_Graph_Add, 0, UI_Color_Green, 1,  930,   y04,  950,   y04); //???????????
-			UI_Line(&G14, "012", UI_Graph_Add, 0, UI_Color_Green, 5,  959,   y04,  960,   y04); //???????????
-			UI_Line(&G15, "013", UI_Graph_Add, 0, UI_Color_Green, 1,  970,   y04,  990,   y04); //???????????
-			UI_Line(&G16, "014", UI_Graph_Add, 0, UI_Color_Green, 1,  960,y04-10,  960,y04-30); //????????????
-			UI_Graphic_ReFresh(7,G10,G11,G12,G13,G14,G15,G16);
-//			UI_Graphic_ReFresh(2,G10,G11);
-//			HAL_Delay(20);
-//			UI_Graphic_ReFresh(2,G12,G13);
-//			HAL_Delay(20);
-//			UI_Graphic_ReFresh(2,G14,G15);
-//			HAL_Delay(20);
-//			UI_Graphic_ReFresh(1,G16);
-//			HAL_Delay(20);
+			UI_Char(&C1,"201", UI_Graph_Add, 0, UI_Color_Green,  22, 10, 3,  100, 800, "vision OFF");
+			UI_Char_ReFresh(&C1);
 			continue;
-		}		
-		if(UI_PushUp_Counter % 261 == 0)
-		{
-			UI_Line(&G20, "202", UI_Graph_Add, 2, UI_Color_Orange, 20, Capacitance_X, 334, 1870, 334);
-			UI_Graphic_ReFresh(1,G20);
 		}
+		if(UI_PushUp_Counter % 151 == 0)
+		{
+			UI_Char(&C2,"202", UI_Graph_Add, 0, UI_Color_Green,  22, 10, 3,  100, 700, "data   OFF");
+			UI_Char_ReFresh(&C2);
+			continue;
+		}
+			//中央标尺
+		if(UI_PushUp_Counter % 201 == 0) //静态UI预绘制 中央标尺1
+		{
+			UI_Line(&G10, "001", UI_Graph_Add, 0, UI_Color_Green, 1,  840,   y01,  920,   y01); //第一行左横线
+			UI_Line(&G11, "002", UI_Graph_Add, 0, UI_Color_Green, 1,  950,   y01,  970,   y01); //第一行十字横
+			UI_Graphic_ReFresh(2,G10,G11);
+			continue;
+		}
+		if(UI_PushUp_Counter % 251 == 0) //静态UI预绘制 中央标尺1
+		{
+			UI_Line(&G12, "003", UI_Graph_Add, 0, UI_Color_Green, 1, 1000,   y01, 1080,   y01); //第一行右横线
+			UI_Line(&G13, "004", UI_Graph_Add, 0, UI_Color_Green, 1,  960,y01-10,  960,y01+10); //第一行十字竖
+			UI_Graphic_ReFresh(2,G12,G13);
+			continue;
+		}
+				if(UI_PushUp_Counter % 301 == 0) //静态UI预绘制 中央标尺1
+		{
+			UI_Line(&G14, "005", UI_Graph_Add, 0, UI_Color_Green, 1,  870,   y02,  930,   y02); //第二行左横线
+			UI_Line(&G15, "006", UI_Graph_Add, 0, UI_Color_Green, 5,  959,   y02,  960,   y02); //第二行中心点
+			UI_Graphic_ReFresh(2,G14,G15);
+			continue;
+		}
+		if(UI_PushUp_Counter % 351 == 0) //静态UI预绘制 中央标尺1
+		{
+			UI_Line(&G16, "007", UI_Graph_Add, 0, UI_Color_Green, 1,  990,   y02, 1050,   y02); //第二行右横线
+			UI_Graphic_ReFresh(1,G16);
+			continue;
+		}
+
+
 		if(UI_PushUp_Counter % 11 == 0)
 		{
-			Capacitance_X  = X - 4.1f * UI_Capacitance;
-			if(50 < UI_Capacitance && UI_Capacitance <= 100) UI_Line(&G20, "202", UI_Graph_Change, 2, UI_Color_Green , 20, Capacitance_X, 334, 1870, 334);
-			if(35 < UI_Capacitance && UI_Capacitance <=  50) UI_Line(&G20, "202", UI_Graph_Change, 2, UI_Color_Yellow, 20, Capacitance_X, 334, 1870, 334);
-			if(0  < UI_Capacitance && UI_Capacitance <=  35) UI_Line(&G20, "202", UI_Graph_Change, 2, UI_Color_Orange, 20, Capacitance_X, 334, 1870, 334);
-			UI_Graphic_ReFresh(1,G20);				
+			if(connect_data.vision_flag == 1)
+				UI_Char(&C1,"201", UI_Graph_Change, 0, UI_Color_Green,  22, 10, 3,  100, 800, "vision ON");
+			else 
+				UI_Char(&C1,"201", UI_Graph_Change, 0, UI_Color_Green,  22, 10, 3,  100, 800, "vision OFF");
+			UI_Char_ReFresh(&C1);			
+			continue;
+		}
+		if(UI_PushUp_Counter % 21 == 0)
+		{
+			if(connect_data.recog_flag == 1) 
+				UI_Char(&C2,"202", UI_Graph_Change, 0, UI_Color_Green,  22, 10, 3,  100, 700, "data   ON");
+			else 
+				UI_Char(&C2,"202", UI_Graph_Change, 0, UI_Color_Green,  22, 10, 3,  100, 700, "data   OFF");
+			UI_Char_ReFresh(&C2);			
 			continue;
 		}
 			vTaskDelay(TRANSMIT_SHOW_DATA_TIME);       //35ms???

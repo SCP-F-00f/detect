@@ -41,7 +41,7 @@
 #define CHASSIS_MOUSE_CTRL_HIGH_SPPED     (2500.0f)                  //按shift的加速值	1600
 #define CHASSIS_MOUSE_CTRL_RHOMB_SPPED   (400.0f)                    //斜方形速度
 #define GAMBAL_YAW_INIT_ENCODE_VALUE_COMMON     (4070)               //普通底盘运动正方向的编码值
-#define GAMBAL_YAW_INIT_ENCODE_VALUE_RHOMB      (5078)               //斜方形运动正方向的编码值
+#define GAMBAL_YAW_INIT_ENCODE_VALUE_RHOMB      (6000)               //斜方形运动正方向的编码值
 #define GAMBAL_YAW_angle_VALUE     (22.755555f)                      //yaw
 
 #define CAMBAL_PITCH_MAX_ANGLE_TO_ENCODE (3200.0f)

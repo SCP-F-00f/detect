@@ -47,6 +47,8 @@ typedef struct
 	can2_rc_ctrl_t can2_rc_ctrl;
 	uint8_t receive_success_flag;
 	uint8_t receive_rc_data_flag;
+	uint8_t recog_flag;
+	int8_t vision_flag;
 }connect_t;
 
 

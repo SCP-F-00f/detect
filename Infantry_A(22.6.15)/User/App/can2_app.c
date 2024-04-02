@@ -114,7 +114,8 @@ void can2_message_progress(CAN_RxHeaderTypeDef *pHeader, uint8_t aData[])
 			connect_gyro_data_process(&connect_data ,aData);
 		}
 		break;
-
+		case CAN2_CONNECT_UIFLAG_STD_ID:
+			get_uiflag_to_chassis(&connect_data,aData);
 
 		default: break;
 	}
@@ -137,7 +138,8 @@ void send_shoot_17mm_data(robot_status_t *robot_status)
     can2_tx_data[1] = (uint8_t)(robot_status->shooter_barrel_cooling_value);
     can2_tx_data[2] = (uint8_t)(robot_status->shooter_barrel_heat_limit>>8);
     can2_tx_data[3] = (uint8_t)(robot_status->shooter_barrel_heat_limit);
-		can2_tx_data[4] = (uint8_t)(30>>8);//射速上限，定死
+
+		can2_tx_data[4] = (uint8_t)(30>>8);//
     can2_tx_data[5] = (uint8_t)(30);
     can2_tx_data[6] = (uint8_t)(power_heat.shooter_17mm_1_barrel_heat>>8);
     can2_tx_data[7] = (uint8_t)(power_heat.shooter_17mm_1_barrel_heat);//改为枪口热量

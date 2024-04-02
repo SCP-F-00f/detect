@@ -187,45 +187,61 @@ void rotate_motion_mode_process(chassis_control_data_t *chassis)
   * @retval			
   * @note           
   */
-uint16_t speed = 0,speed_max=850.0,SPORT_ROTATE_DECREASE=250;
+uint16_t speed = 0,speed_max=700.0,SPORT_ROTATE_DECREASE=250,open_num,move_rotate_drop=300;
 float num1=0.9,speed1,num2=1.7,speed_min=550.0;
-uint8_t close_flag,last_close_flag,move_close_flag;
+uint8_t key_open_flag,last_key_open_flag,move_key_open_flag,trigger_key,last_key;
 float speed_factor1,speed_factor2,speed_factor3;
-float rotate_add_w=0.6,rotate_add_s=0.1,rotate_add_a=0.1,rotate_add_d=0.1;
+float rotate_add_w=0.1,rotate_add_s=0.1,rotate_add_a=0.1,rotate_add_d=0.1;
 
 void get_forward_back_value(chassis_control_data_t *chassis)
 {
 //	int16_t speed = 0;
-	if(move_close_flag)		
+	if(move_key_open_flag)
 	{
 		speed1=0;;
 		speed = 0;
 //		if(speed==0)
-		move_close_flag=0;
+		move_key_open_flag=0;
 	}
 	speed_factor1=(robot_status.chassis_power_limit/100.0-1)/0.6*(1-speed_min/speed_max)+1.0;
-	if(chassis->connect->can2_rc_ctrl.mouse.key & ((CHASSIS_FORWARD_KEY)|(CHASSIS_BACK_KEY)|(CHASSIS_LEFT_KEY)|(CHASSIS_RIGHT_KEY)))		//方向键按下
+	if(chassis->connect->can2_rc_ctrl.mouse.key & ((CHASSIS_FORWARD_KEY)|(CHASSIS_BACK_KEY)|(CHASSIS_LEFT_KEY)|(CHASSIS_RIGHT_KEY)))
 	{
 		speed1 += num1;
 		speed = speed1;
-		if(chassis->connect->can2_rc_ctrl.mouse.key & CHASSIS_HIGH_SPEED_KEY&&speed>speed_max*2)		//加速
-			speed = speed_max*2;
-		else if(chassis->connect->can2_rc_ctrl.work_mode == ROBOT_ROTATE_MOTION_MODE)			//运动小陀螺
-				speed = speed_max-100;
-			else
+//		if((chassis->connect->can2_rc_ctrl.work_mode == ROBOT_ROTATE_MOTION_MODE)&&(chassis->connect->can2_rc_ctrl.mouse.key & CHASSIS_HIGH_SPEED_KEY))
+//		{
+//			if(speed>(speed_max-100)*1.5)
+//			speed = speed>(speed_max-100)*1.5;
+//		}
+		if(chassis->connect->can2_rc_ctrl.mouse.key & CHASSIS_HIGH_SPEED_KEY)
+		{
+			if(speed>speed_max*2.0)
+			speed = speed_max*2.0;
+		}
+		
+		else if(chassis->connect->can2_rc_ctrl.work_mode == ROBOT_ROTATE_MOTION_MODE)
+		{
+			if(speed>speed_max-move_rotate_drop)
+			speed = speed_max-move_rotate_drop;
+		}
+			else if(speed>speed_max)
 				speed = speed_max;
-		close_flag=1;
+		key_open_flag=1;
 	}
-	else if(close_flag)
+	else if(key_open_flag)
 	{
-		close_flag=0;
+		key_open_flag=0;
+		open_num=0;
 	}
-	
-	if(close_flag==0&&last_close_flag==1)			//松开方向键下一时刻
-		move_close_flag=1;
-	last_close_flag=close_flag;
-
-	if(chassis->connect->can2_rc_ctrl.control_mode == REMOTE_MODE)      //遥控模式
+	if(key_open_flag)
+	{
+		if(open_num<500)
+	open_num+=1;
+	}
+	if(key_open_flag==0&&last_key_open_flag==1)
+		move_key_open_flag=1;
+	last_key_open_flag=key_open_flag;
+	if(chassis->connect->can2_rc_ctrl.control_mode == REMOTE_MODE)      
 	{
 		if ( RC_abs(chassis->connect->can2_rc_ctrl.rc.ch3) < 500 || RC_abs(chassis->connect->can2_rc_ctrl.rc.ch2) < 500)
 		{
@@ -273,10 +289,10 @@ void get_forward_back_value(chassis_control_data_t *chassis)
 			chassis->chassis_control_mode_flag = 0;
 
 		}
-		else if(chassis->connect->can2_rc_ctrl.mouse.key & ROBOT_RHOMB_MODE_KEY)   //斜方形底盘运动 C
-		{
-			chassis->chassis_control_mode_flag = 1;
-		}
+//		else if(chassis->connect->can2_rc_ctrl.mouse.key & ROBOT_RHOMB_MODE_KEY)   //斜方形底盘运动 C
+//		{
+//			chassis->chassis_control_mode_flag = 1;
+//		}
 
 		if(chassis->chassis_control_mode_flag)	//斜方形底盘运动
 		{
@@ -315,23 +331,23 @@ void get_forward_back_value(chassis_control_data_t *chassis)
 			//forward and back
 			if(chassis->connect->can2_rc_ctrl.mouse.key & CHASSIS_FORWARD_KEY)//W
 			{
-//				if(chassis->connect->can2_rc_ctrl.work_mode == ROBOT_ROTATE_MOTION_MODE)
-//				{
-//				chassis->forward_back = speed;
-//				chassis->left_right = -speed*rotate_add_w;
-//				}
-//				else
+				if(chassis->connect->can2_rc_ctrl.work_mode == ROBOT_ROTATE_MOTION_MODE)
+				{
+				chassis->forward_back = speed;
+				chassis->left_right = -speed*rotate_add_w;
+				}
+				else
 				chassis->forward_back = speed;	
 
 			}
 			else if(chassis->connect->can2_rc_ctrl.mouse.key & CHASSIS_BACK_KEY)//S
 			{
-//				if(chassis->connect->can2_rc_ctrl.work_mode == ROBOT_ROTATE_MOTION_MODE)
-//				{
-//				chassis->forward_back = -speed;
-//				chassis->left_right = speed*rotate_add_s;
-//				}
-//				else
+				if(chassis->connect->can2_rc_ctrl.work_mode == ROBOT_ROTATE_MOTION_MODE)
+				{
+				chassis->forward_back = -speed;
+				chassis->left_right = speed*rotate_add_s;
+				}
+				else
 				chassis->forward_back = -speed;
 
 			}
@@ -342,22 +358,22 @@ void get_forward_back_value(chassis_control_data_t *chassis)
 			//left and right
 			if(chassis->connect->can2_rc_ctrl.mouse.key & CHASSIS_LEFT_KEY)//L
 			{
-//				if(chassis->connect->can2_rc_ctrl.work_mode == ROBOT_ROTATE_MOTION_MODE)
-//				{
-//				chassis->left_right = -speed*0.7;
-//				chassis->forward_back = -speed*rotate_add_a;
-//				}
-//				else
+				if(chassis->connect->can2_rc_ctrl.work_mode == ROBOT_ROTATE_MOTION_MODE)
+				{
+				chassis->left_right = -speed*0.7;
+				chassis->forward_back = -speed*rotate_add_a;
+				}
+				else
 				chassis->left_right = -speed*0.7;
 			}
 			else if(chassis->connect->can2_rc_ctrl.mouse.key & CHASSIS_RIGHT_KEY)//R
 			{
-//				if(chassis->connect->can2_rc_ctrl.work_mode == ROBOT_ROTATE_MOTION_MODE)
-//				{
-//				chassis->left_right = speed*0.7;
-//				chassis->forward_back = speed*rotate_add_d;
-//				}
-//				else
+				if(chassis->connect->can2_rc_ctrl.work_mode == ROBOT_ROTATE_MOTION_MODE)
+				{
+				chassis->left_right = speed*0.7;
+				chassis->forward_back = speed*rotate_add_d;
+				}
+				else
 				chassis->left_right = speed*0.7;
 			}
 			else
@@ -386,13 +402,29 @@ float rotate_abs(float val)
 	return val;
 }
 
-int16_t yaw_raw,delta_yaw=2000,rotate_min=300,rotate_max=500;
-uint16_t ROTATE_BASE_SPEED=400,ROTATE_BUFF_SPEED=500,first_rotate,avge_rotate=300;
+int16_t yaw_raw,delta_yaw=2000,rotate_min=370,rotate_max=550,ROTATE_BASE_SPEED=400;
+uint16_t ROTATE_BUFF_SPEED=500,first_rotate,avge_rotate=300,key_trigger_num;
+int8_t rotate_tend=1;
 float speed_factor0;
 
 void get_rotate_value(chassis_control_data_t *chassis, chassis_pid_t *chassis_pid)
 {
 	ROTATE_BASE_SPEED = (robot_status.chassis_power_limit-100)/60.0*(rotate_max-rotate_min)+rotate_max; //y=(x-x2)/(x1-x2)*(y1-y2)+y2 (40,400) (100,800)//(40,300) (100,600)
+	switch(key_trigger_num)
+	{
+		case 0:
+			if(chassis->connect->can2_rc_ctrl.mouse.key & ROBOT_RHOMB_MODE_KEY)
+			{
+				rotate_tend=-rotate_tend;
+				key_trigger_num=1;
+			}break;
+		case 1:
+			if(!(chassis->connect->can2_rc_ctrl.mouse.key & ROBOT_RHOMB_MODE_KEY))
+			{
+				key_trigger_num=0;
+			}break;
+		default: break;
+	}
 	if(chassis->connect->can2_rc_ctrl.work_mode == ROBOT_COMMON_MODE)	//	底盘跟随pid
 	{
 		if(chassis->chassis_control_mode_flag)
@@ -415,7 +447,7 @@ void get_rotate_value(chassis_control_data_t *chassis, chassis_pid_t *chassis_pi
 		last_yaw_set = chassis->connect->can2_rc_ctrl.gyro.yaw_set;
 		first_rotate=1;
 	}
-//		else if(close_flag==1&&chassis->connect->can2_rc_ctrl.work_mode == ROBOT_ROTATE_MOTION_MODE)
+//		else if(key_open_flag==1&&chassis->connect->can2_rc_ctrl.work_mode == ROBOT_ROTATE_MOTION_MODE)
 //	{
 //	chassis->rotate=300;
 //	}
@@ -426,34 +458,37 @@ void get_rotate_value(chassis_control_data_t *chassis, chassis_pid_t *chassis_pi
 		chassis->rotate_buff_flag=1;
 		yaw_raw=chassis->yaw_motor_msg->encoder.raw_value;
 		}
-		if(close_flag)
+		if(open_num>400)
 		{
-		chassis->rotate = 500;
+			if(chassis->connect->can2_rc_ctrl.mouse.key & CHASSIS_HIGH_SPEED_KEY)
+				chassis->rotate = 650;
+			else
+			chassis->rotate = 500;
 		}
 		else if(chassis->rotate_buff_flag|first_rotate==1)      
         {
 			 srand(xTaskGetTickCount());
-				chassis->rotate = rand() % (ROTATE_BASE_SPEED+100) + ROTATE_BASE_SPEED;
+				if(chassis->connect->can2_rc_ctrl.mouse.key & CHASSIS_HIGH_SPEED_KEY)
+					ROTATE_BASE_SPEED = ROTATE_BASE_SPEED+100;
+				chassis->rotate = (rand() % (ROTATE_BASE_SPEED+100) + ROTATE_BASE_SPEED);
 				chassis->rotate_buff_flag = 0;
 				first_rotate=0;
 				}
 			}
 	else if(chassis->connect->can2_rc_ctrl.work_mode == ROBOT_ROTATE_STOP_MODE)	//静止小陀螺
 	{
-		chassis->rotate = avge_rotate;
-//		if(RC_abs(chassis->yaw_motor_msg->encoder.raw_value - yaw_raw)>2048)
-//		{
-//		chassis->rotate_buff_flag=1;
-//		yaw_raw=chassis->yaw_motor_msg->encoder.raw_value;
-//		}
-//		if(chassis->rotate_buff_flag|first_rotate==1)      
-//        {
-//			 srand(xTaskGetTickCount());
-//				chassis->rotate = rand() % (ROTATE_BASE_SPEED+100) + ROTATE_BASE_SPEED;
-//				chassis->rotate_buff_flag = 0;
-//				first_rotate=0;
-
-//		}
+if(RC_abs(chassis->yaw_motor_msg->encoder.raw_value - yaw_raw)>delta_yaw)
+		{
+		chassis->rotate_buff_flag=1;
+		yaw_raw=chassis->yaw_motor_msg->encoder.raw_value;
+		}
+		if(chassis->rotate_buff_flag|first_rotate==1)      
+        {
+			 srand(xTaskGetTickCount());
+				chassis->rotate = (rand() % (ROTATE_BASE_SPEED+100) + ROTATE_BASE_SPEED)*rotate_tend;
+				chassis->rotate_buff_flag = 0;
+				first_rotate=0;
+				}
 	}
 	else 
 	{

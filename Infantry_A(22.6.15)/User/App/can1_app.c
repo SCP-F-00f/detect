@@ -27,30 +27,6 @@ motor_msg_t cm1_msg = {0};
 motor_msg_t cm2_msg = {0};
 motor_msg_t cm3_msg = {0};
 motor_msg_t cm4_msg = {0};
-
-power_control_t power_control = {0};
-
-static void chassis_power_msg_cap(power_control_t *m, uint8_t aData[])
-{
-	m->cap = ((aData[0]<<8)|aData[1]);
-}
-
-static void chassis_power_msg_power(power_control_t *m, uint8_t aData[])
-{
-	m->power = ((aData[0]<<8)|aData[1]);
-}
-
-static void chassis_power_msg_max_power(power_control_t *m, uint8_t aData[])
-{
-	m->max_power = ((aData[0]<<8)|aData[1]);
-}
-
-static void chassis_power_msg_voltage(power_control_t *m, uint8_t aData[])
-{
-	m->voltage = ((aData[0]<<8)|aData[1]);
-	m->real_voltage = (m->voltage)*0.01231f;
-}
-
 /**
   * @brief          
   * @author         
@@ -142,22 +118,6 @@ void can1_message_progress(CAN_RxHeaderTypeDef *pHeader, uint8_t aData[])
 		{
 			chassis_motor_msg_process(&cm4_msg ,aData);            
 		}break;
-		case 0x210:
-		{
-			chassis_power_msg_cap(&power_control ,aData);            
-		}break;
-//		case 0x212:
-//		{
-//			chassis_power_msg_power(&power_control ,aData);            
-//		}break;
-//		case 0x213:
-//		{
-//			chassis_power_msg_max_power(&power_control ,aData);            
-//		}break;
-//		case 0x214:
-//		{
-//			chassis_power_msg_voltage(&power_control ,aData);            
-//		}break;
 	}
 }
 /**
@@ -220,8 +180,8 @@ void set_chassis_power(uint16_t temPower)    //µ×ÅÌ¿ØÖÆ¹¦ÂÊ
     can1_tx_header.RTR = CAN_RTR_DATA;
     can1_tx_header.DLC = 0x08;
     
-    can1_tx_data[0] = (uint8_t)temPower;
-    can1_tx_data[1] = (uint8_t)0;
+    can1_tx_data[0] = (uint8_t)(temPower >> 8);
+    can1_tx_data[1] = (uint8_t)temPower;
     can1_tx_data[2] = (uint8_t)(0 >> 8);
     can1_tx_data[3] = (uint8_t)0;
     can1_tx_data[4] = (uint8_t)(0 >> 8);
