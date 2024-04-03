@@ -13,31 +13,27 @@
 #include "connect_task.h"
 
 uint8_t UI_Seq=0;	//包序号
-
-
 extern  robot_status_t robot_status;
+uint16_t	operator_ID;
 
-
-uint16_t  robot_id=5;
-uint16_t	operator_ID=0x0105;
 /**
   * @brief  通过自己的ID，返回对应操作手客户端ID
   * @param  void
   * @retval 
   * @attention  
   */
+
 int Operator_ID(void)
 {
-	uint8_t Operator_id;
 	if(robot_status.robot_id < 10)        //红方
 	{
-		Operator_id = robot_status.robot_id + 0x0100 ;
+		operator_ID = robot_status.robot_id + 0x0100 ;
 	}
 	else if (robot_status.robot_id > 10)  //蓝方
 	{
-		Operator_id = robot_status.robot_id + 0x0064 ;
+		operator_ID = robot_status.robot_id + 0x0064 ;
 	}
-	return Operator_id;
+	return operator_ID;
 }
 
 void UI_graphic(graphic_data_struct_t* graphic_data_struct, uint8_t name[3],uint32_t operate,uint32_t graphic ,uint32_t layer,uint32_t color,uint32_t width,uint32_t start_x,uint32_t start_y,uint32_t end_x,uint32_t end_y )
@@ -285,11 +281,14 @@ void UI_Graphic_ReFresh(int cnt,...)
 	va_list UI;
 	va_start(UI,cnt);
 	
-//	ShowData.txFrameHeader.SOF = UI_SOF;
+//ShowData.txFrameHeader.SOF = UI_SOF;
 //	ShowData.txFrameHeader.data_length =6+cnt*15;
 //	ShowData.txFrameHeader.seq = UI_Seq;
 	
-	CliendTxBuffer[0]=UI_SOF;CliendTxBuffer[1]=(6+cnt*15)&0x00ff;CliendTxBuffer[2]=((6+cnt*15)>>8)&0x00ff;CliendTxBuffer[3]=UI_Seq;
+	CliendTxBuffer[0]=UI_SOF;
+	CliendTxBuffer[1]=(6+cnt*15)&0x00ff;
+	CliendTxBuffer[2]=((6+cnt*15)>>8)&0x00ff;
+	CliendTxBuffer[3]=UI_Seq;
 	
 //	memcpy(CliendTxBuffer, &ShowData,LEN_HEADER-1);//写入帧头数据							//该函数把uint_8当uingt_16写入
 	Append_CRC8_Check_Sum(CliendTxBuffer, LEN_HEADER);//写入帧头CRC8校验码
@@ -306,7 +305,7 @@ void UI_Graphic_ReFresh(int cnt,...)
 	}
 	
 	
-	ShowData.dataFrameHeader.send_ID 	 = robot_id ;//发送者的ID
+	ShowData.dataFrameHeader.send_ID 	 = robot_status.robot_id ;//发送者的ID
 	ShowData.dataFrameHeader.receiver_ID = operator_ID;//客户端的ID，只能为发送者机器人对应的客户端
 	
 	memcpy(CliendTxBuffer+LEN_HEADER, &ShowData.CmdID, LEN_CMDID+LEN_DATAFH);//写入数据
@@ -340,12 +339,13 @@ void UI_Graphic_ReFresh(int cnt,...)
 输入参数
 				string_data_struct_t_	字符串数据结构体
 */
-
-void UI_Char_ReFresh(ext_client_custom_character_t* string_data_struct)
-{
 	ext_Send_User_Data_t	ShowData;
 	uint8_t CliendTxBuffer[SEND_MAX_LEN];
 	uint8_t*	string_data;
+
+void UI_Char_ReFresh(ext_client_custom_character_t* string_data_struct)
+{
+
 //	ShowData.txFrameHeader.SOF = UI_SOF;
 //	ShowData.txFrameHeader.data_length =6+45;
 //	ShowData.txFrameHeader.seq = UI_Seq;
@@ -358,7 +358,7 @@ void UI_Char_ReFresh(ext_client_custom_character_t* string_data_struct)
 	Append_CRC8_Check_Sum(CliendTxBuffer, LEN_HEADER);//写入帧头CRC8校验码
 	ShowData.CmdID = ROBOT_COMMUNICATION_ID;
 	ShowData.dataFrameHeader.data_cmd_id=UI_Data_ID_DrawChar;
-	ShowData.dataFrameHeader.send_ID 	 = robot_id ;//发送者的ID
+	ShowData.dataFrameHeader.send_ID 	 = robot_status.robot_id ;//发送者的ID
 	ShowData.dataFrameHeader.receiver_ID = operator_ID;//客户端的ID，只能为发送者机器人对应的客户端
 	
 	memcpy(CliendTxBuffer+LEN_HEADER, &ShowData.CmdID, LEN_CMDID+LEN_DATAFH);//写入数据
@@ -400,7 +400,7 @@ void UI_Del(uint8_t operate,uint8_t layer)
 	
 	
 	ShowData.dataFrameHeader.data_cmd_id=UI_Data_ID_Del;
-	ShowData.dataFrameHeader.send_ID 	 = robot_id;//发送者的ID
+	ShowData.dataFrameHeader.send_ID 	 = robot_status.robot_id;//发送者的ID
 	ShowData.dataFrameHeader.receiver_ID = operator_ID;//客户端的ID，只能为发送者机器人对应的客户端
 	
 	memcpy(CliendTxBuffer+LEN_HEADER, &ShowData.CmdID, LEN_CMDID+LEN_DATAFH);//写入数据
@@ -433,6 +433,7 @@ uint16_t UI_PushUp_Counter = 261;
 uint8_t UI_Capacitance=30;
 float Capacitance_X;
 float X = 1850.0f;
+int a;
 
 interaction_figure_t	G10;
 interaction_figure_t	G11;
@@ -441,7 +442,12 @@ interaction_figure_t	G13;
 interaction_figure_t	G14;
 interaction_figure_t	G15;
 interaction_figure_t	G16;
-//interaction_figure_t	G20;
+
+interaction_figure_t	G20;
+interaction_figure_t	G21;
+interaction_figure_t	G22;
+interaction_figure_t	G23;
+interaction_figure_t	G24;
 
 ext_client_custom_character_t C1;
 ext_client_custom_character_t C2;
@@ -452,6 +458,7 @@ void test_task(void *argument)
 
     while(1)
     {
+			a = Operator_ID();
 		UI_PushUp_Counter++;
 		//视觉标志位
 		if(UI_PushUp_Counter % 101 == 0)
@@ -494,8 +501,26 @@ void test_task(void *argument)
 			UI_Graphic_ReFresh(1,G16);
 			continue;
 		}
-
-
+		if(UI_PushUp_Counter % 401 == 0) //静态UI预绘制 小陀螺预警线
+		{
+			UI_Line(&G20, "101", UI_Graph_Add, 1, UI_Color_Yellow, 2,  630,   30,  780,  100);
+			UI_Line(&G21, "102", UI_Graph_Add, 1, UI_Color_Yellow, 2,  780,  100,  930,  100);
+			UI_Graphic_ReFresh(2,G20,G21);
+			continue;
+		}
+		if(UI_PushUp_Counter % 451 == 0) //静态UI预绘制 小陀螺预警线
+		{
+			UI_Line(&G22, "103", UI_Graph_Add, 1, UI_Color_Yellow, 2,  990,  100, 1140,  100);
+			UI_Line(&G23, "104", UI_Graph_Add, 1, UI_Color_Yellow, 2, 1140,  100, 1290,   30);
+			UI_Graphic_ReFresh(2,G22,G23);
+			continue;
+		}
+		if(UI_PushUp_Counter % 501 == 0) //静态UI预绘制 小陀螺预警线
+		{
+			UI_Line(&G24, "105", UI_Graph_Add, 1, UI_Color_Yellow, 5,  959,  100,  960,  100);
+			UI_Graphic_ReFresh(1,G24);
+			continue;
+		}
 		if(UI_PushUp_Counter % 11 == 0)
 		{
 			if(connect_data.vision_flag == 1)
@@ -514,6 +539,7 @@ void test_task(void *argument)
 			UI_Char_ReFresh(&C2);			
 			continue;
 		}
+		
 			vTaskDelay(TRANSMIT_SHOW_DATA_TIME);       //35ms???
     }
 }
