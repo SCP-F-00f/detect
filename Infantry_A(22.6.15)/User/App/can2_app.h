@@ -15,7 +15,7 @@ typedef enum
 	//can2收
 	CAN2_CONNECT_RC_CTRL_STD_ID = 0x200,
 	CAN2_CONNECT_CM_GYRO_STD_ID = 0x208,
-	CAN2_CONNECT_UIFLAG_STD_ID  = 0x207,
+	CAN2_CONNECT_UIFLAG_STD_ID  = 0x209,
 	//can2发
 	CAN2_SHOOT_17mm_ID = 0x020B,         //17mm发射机构裁判信息
 	CAN2_SHOOT_JUDGE_ID = 0x020C,        //发射机构裁判信息
